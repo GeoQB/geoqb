@@ -1,0 +1,15 @@
+CREATE QUERY loadLayer(String lID1,String lID2) FOR GRAPH OSMLayers_Demo6a {
+
+    SetAccum<EDGE> @@edgeset;
+
+    start = ANY;
+
+    nodes1 = SELECT t FROM start:s -(:e)-> :t
+    WHERE instr ( e.layer_id, lID1 ) >= 0 AND instr ( e.layer_id, lID2 ) >= 0
+    accum
+    @@edgeset += e;
+
+    PRINT nodes1;
+    PRINT @@edgeset;
+
+}

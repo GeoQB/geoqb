@@ -1,0 +1,36 @@
+CREATE QUERY count1(/* Parameters here */) FOR GRAPH OSMLayers_Demo6 {
+
+  SumAccum<int> @osmtagCnt= 0;
+  SumAccum<int> @@placeCnt= 0;
+  SumAccum<int> @@placeCnt6= 0;
+  SumAccum<int> @@placeCnt9= 0;
+  SumAccum<int> @@placeCnt12= 0;
+
+
+  Result_tagged = SELECT s
+           FROM h3place:s -(hasOSMTag:e)- :t
+           ACCUM CASE WHEN t.type == "osmtag" THEN
+                           s.@osmtagCnt += 1
+                     END;
+
+  Result_all = SELECT s
+            FROM h3place:s
+            ACCUM @@placeCnt += 1;
+
+  Result_all2 = SELECT s
+            FROM h3place:s
+            ACCUM CASE WHEN s.resolution == 9 THEN
+                            @@placeCnt9 += 1
+                       WHEN s.resolution == 6 THEN
+                            @@placeCnt6 += 1
+                       WHEN s.resolution == 12 THEN
+                            @@placeCnt12 += 1
+                  END;
+
+  PRINT Result_tagged[Result_tagged.@osmtagCnt];
+  PRINT @@placeCnt;
+  PRINT @@placeCnt6;
+  PRINT @@placeCnt9;
+  PRINT @@placeCnt12;
+  PRINT Result_all;
+}
