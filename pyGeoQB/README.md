@@ -213,6 +213,12 @@ Support for using _SOLID-Pods_ for sharing your data asset in a well controlled 
 GeoQB playground is a Github based data pod with example data used in our hackathon project.
 
 
+# Analysis Results
+
+![img.png](docs/graph-images/clusters-mixed-and-separated.png)
+
+![img.png](docs/graph-images/induced-structure.png)
+
 ---
 # Resources:
 - https://github.com/GeoQB/geoqb
