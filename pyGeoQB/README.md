@@ -115,35 +115,49 @@ The following variables must be defined in your _env.sh_ file.
 ``` 
 #!/bin/bash
 
+#!/bin/bash
+
+### WORKSPACE path
+#
+# path must end with /
+#
+export GEOQB_WORKSPACE=/Users/mkaempf/GITHUB.private/geoqb-playground/KGC-2022/
+
+### Overpass-API service - public OSM data service
+export overpass_endpoint="https://overpass.kumi.systems/api/interpreter"
+
+### Sophox - public OSM-RDF data service
+export sophox_endpoint='https://sophox.org:443/sparql'
+
 ### TigerGraph cloud
 export TG_URL=https://geoqb.i.tgcloud.io/
-export TG_SECRET_ALIAS=demo6a
-export TG_SECRET=hjlhpgg5n9ka7qovutke96ane63duf2o
-export TG_PASSWORD=2022IstCool
-export TG_USERNAME=demo6
+export TG_SECRET_ALIAS=...
+export TG_SECRET=...
+export TG_PASSWORD=...
+export TG_USERNAME=...
 
 ### Tebi S3 - via boto3
-export aws_access_key_id='3Aso9KSsQHrea8Tb',
-export aws_secret_access_key='y13XZjSnkEgiWXvFAxEMKk8922lWqykqX8z3qTMu',
-export endpoint_url='https://s3.tebi.io'
+export aws_access_key_id='...',
+export aws_secret_access_key='...',
+export s3_endpoint_url='https://s3.tebi.io'
 
 ### SOLID Cloud Data-POD
 export SOLID_IDP='https://solidcommunity.net'
-export SOLID_POD_ENDPOINT="https://kamir.solidcommunity.net"
-export SOLID_USERNAME="user1"
-export SOLID_PASSWORD="abcdefg*+"
+export SOLID_POD_ENDPOINT="https://xxx.solidcommunity.net"
+export SOLID_USERNAME="..."
+export SOLID_PASSWORD="...#"
 
 ### Confluent Cloud - Kafka
-export bootstrap_servers="pkc-zm3p0.eu-north-1.aws.confluent.cloud:9092"
+export bootstrap_servers="..."
 export security_protocol="SASL_SSL"
 export sasl_mechanisms="PLAIN"
-export sasl_username="user2"
-export sasl_password="hijklmn*+"
+export sasl_username="..."
+export sasl_password="..."
 
 # Confluent Cloud - Schema Registry
-export schema_registry_url="https://psrc-xm8wx.eu-central-1.aws.confluent.cloud"
+export schema_registry_url="..."
 export basic_auth_credentials_source="USER_INFO"
-export basic_auth_user_info="user3:abcdefg*+"
+export basic_auth_user_info="...:..."
 ``` 
 
 ## How to run the examples?
