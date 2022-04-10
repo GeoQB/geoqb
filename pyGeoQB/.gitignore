@@ -2,7 +2,7 @@
 workspace/
 env/
 .idea/
-../.DS_Store
+../.DS_Store/**
 
 ### VirtualEnv template
 # Virtualenv
