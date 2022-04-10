@@ -209,8 +209,12 @@ export GEOQB_WORKSPACE=/Users/mkaempf/GITHUB.private/geoqb-playground/KGC-2022)
 
 Support for using _SOLID-Pods_ for sharing your data asset in a well controlled manner is on the way and will be added soon.
 
+![img.png](docs/temp_logo_pg.png)(https://github.com/GeoQB/geoqb-playground)
+GeoQB playground is a Github based data pod with example data used in our hackathon project.
 
-## Resources:
+
+---
+# Resources:
 - https://github.com/GeoQB/geoqb
 - https://journals.plos.org/plosone/article/authors?id=10.1371/journal.pone.0141892
 - https://www.openstreetmap.org/
