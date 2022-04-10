@@ -8,7 +8,7 @@ _pyGeoQB_ is our first public module in this repository. We have created it duri
 
 [![temp_logo](pyGeoQB/docs/temp_logo.png)](https://github.com/GeoQB/geoqb/tree/main/pyGeoQB)
 
-_pyGeoQB_ is a Python package, which implements our suggested "multi-layer graph management methodology" over TigerGraph,
+_pyGeoQB_ is a Python package, which implements a cloud native ready "multi-layer graph management methodology" over TigerGraph,
 
 [![img.png](pyGeoQB/docs/temp_logo_pg.png)](https://github.com/GeoQB/geoqb-playground)
 
