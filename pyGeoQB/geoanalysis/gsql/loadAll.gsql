@@ -1,0 +1,13 @@
+CREATE QUERY loadAll(/* Parameters here */) FOR GRAPH OSMLayers_Demo6a {
+
+    SetAccum<EDGE> @@edgeset;
+
+    start = ANY;
+
+    nodes1 = SELECT t FROM start:s -(:e)-> :t
+    accum
+    @@edgeset += e;
+
+    PRINT nodes1;
+    PRINT @@edgeset;
+}

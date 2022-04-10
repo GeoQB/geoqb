@@ -1,0 +1,13 @@
+CREATE QUERY osm_tag_histogram(INT res) FOR GRAPH OSMLayers_Demo6a {
+
+    SumAccum<int> @osmtagCnt=0;
+
+    Result_tags = SELECT t
+           FROM :t -(hasOSMTag:e)- :s
+           WHERE s.resolution == res
+           ACCUM t.@osmtagCnt += 1;
+
+    PRINT Result_tags;
+    PRINT res;
+
+}
