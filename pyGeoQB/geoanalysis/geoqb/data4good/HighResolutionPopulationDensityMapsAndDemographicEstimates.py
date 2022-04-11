@@ -36,7 +36,7 @@ DS_STAGE_PATH=WORKPATH+"/stage/data4good/"
 
 
 def getDumpFileName( SUFFIX="" ):
-    return DS_STAGE_PATH + f"/dump_temp_enrichment{SUFFIX}.csv"
+    return DS_STAGE_PATH + f"/dump_temp_enrichment{SUFFIX}.csv.zip"
 
 #
 # The staged data file is used to blend the input data.

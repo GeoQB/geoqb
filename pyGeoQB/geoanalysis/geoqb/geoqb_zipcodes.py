@@ -6,7 +6,7 @@ def getGermanZipCodes( verbose = False ):
 
     global dfZip
 
-    path_to_zipcode_list = "./data/German-Zip-Codes.csv"
+    path_to_zipcode_list = "./data/raw/German-Zip-Codes.csv"
 
     if dfZip is None:
         dfZip = pd.read_csv( path_to_zipcode_list, header=1, sep=";", dtype=str,
