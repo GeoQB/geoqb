@@ -8,10 +8,10 @@ from os.path import exists
 
 
 
-def getFileHandle( path="", fn="f1.dat" ):
+def getFileHandle( path="", fn="f1.dat", mode="w" ):
 
     WORKPATH = os.environ.get('GEOQB_WORKSPACE')
-    file = open( WORKPATH + path + fn, "w")
+    file = open( WORKPATH + path + fn, mode)
 
     return file
 

@@ -24,6 +24,8 @@ def h3Index(location,resolution=10):
 # at a resolution defined by argument
 #
 def h3Index_lat_lon_level( lat, lon, resolution ):
+  #print( type(resolution) )
+  #print( resolution )
   h3index = h3.geo_to_h3(lat, lon, resolution)
   return "h3("+str(resolution)+")_"+h3index
 

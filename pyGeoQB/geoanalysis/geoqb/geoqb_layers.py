@@ -225,7 +225,7 @@ class LayerSpecification:
         return json.dumps(layerState, default=lambda o: o.__dict__, sort_keys=False, indent=4)
 
 
-    def __init__(self, location_name="Breege", zoom=9, l=0.3, fileName=None, center=None, URI=None, area=None, fromLayer = False  ):
+    def __init__(self, location_name="Breege", zoom=9, l=3, fileName=None, center=None, URI=None, area=None, fromLayer = False  ):
 
         # given ...
 
@@ -533,7 +533,7 @@ class LayerSpecification:
 
     def dumpLayerMD2( self, path_offset, verbose=False ):
         MDFN = path_offset + "/" + self.fnMD
-        f = open( MDFN, "a")
+        f = open( MDFN, "w")
         f.write( self.toJSON() )
         if verbose:
             print( F">>> MD Filename: {MDFN}")

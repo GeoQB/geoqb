@@ -40,7 +40,8 @@ wordcloud
 seaborn
 plotly
 pyfiglet
-click
+plack
+geopy
 tornado==5.0
 #pandas==0.23.4
 #osmium
