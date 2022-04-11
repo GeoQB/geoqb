@@ -5,13 +5,14 @@
 #  - Data4Good : Population data is linked to h3index cells
 #
 import sys
-sys.path.append('./')
+sys.path.append('../')
 
 import os
 import pandas as pd
 import numpy as np
 from os.path import exists
 
+import geoanalysis.geoqb as gq
 import geoanalysis.geoqb.geoqb_workspace as gqws
 import geoanalysis.geoqb.geoqb_zipcodes as gqzip
 import geoanalysis.geoqb.geoqb_h3 as gqh3

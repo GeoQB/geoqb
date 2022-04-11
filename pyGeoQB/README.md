@@ -115,7 +115,7 @@ The following variables must be defined in your _env.sh_ file.
 ``` 
 #!/bin/bash
 
-#!/bin/bash
+source $1/bin/activate
 
 ### WORKSPACE path
 #

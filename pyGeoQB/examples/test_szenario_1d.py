@@ -2,45 +2,24 @@
 #
 # This GeoQB demo script reads the full graph model from TigerGraph.
 #
+# Furthermore, using selective layers, we do the data blending demo ...
+#
 
 
 
 ##################################################
 # GeoQB dependencies ...
 #
-
 import sys
 sys.path.append('./')
 
-import os
-from os.path import exists
-
 import geoanalysis.geoqb.data4good.HighResolutionPopulationDensityMapsAndDemographicEstimates as d4g_population
-
-import geoanalysis.geoqb.geoqb_plots as gqplots
-
-import geoanalysis.geoqb.geoqb_h3 as gqh3
-
-import geoanalysis.geoqb.geoqb_kafka as gqk
-
-import geoanalysis.geoqb.geoqb_osm_pandas as gqosm
-
 import geoanalysis.geoqb.geoqb_tg as gqtg
+import geoanalysis.geoqb.geoqb_workspace as gqws
 
-import geoanalysis.geoqb.geoqb_layers as gql
-
-import networkx as nx
-
-
-
-#
-# Python dependencies ...
-#
+import os
 import pandas as pd
 from datetime import datetime
-import time
-import copy
-import json
 
 #
 # The timestamp is used in all asset names so that we can implicitely find out what belongs to a single study.
@@ -57,6 +36,12 @@ TG_USERNAME = os.environ.get('TG_USERNAME')
 TG_PASSWORD = os.environ.get('TG_PASSWORD')
 TG_URL = os.environ.get('TG_URL')
 
+#####################################################
+#  Extracted data will be stored in this folder.
+#  - it can be a mounted Google Drive folder, or a volume, or a local path.
+#
+#path_offset = "./workspace"
+path_offset = gqws.prepareWorkspaceFolders()
 WORKPATH = "workspace/sample1d/"
 
 ######################################################
@@ -72,11 +57,19 @@ graph_name = "OSMLayers_Demo6a"
 conn, token = gqtg.initTG( graph_name=graph_name, username=TG_USERNAME, password=TG_PASSWORD, hostname=TG_URL, secretalias=TG_SECRET_ALIAS, secret=TG_SECRET )
 print( conn )
 
+#
+# Just load the full graph ...
+#
 gqtg.getFullGraph2( conn, graph_name, WORKPATH=WORKPATH, overwrite=True )
 
+
+#
+# Iterate over individual layers ...
+#
 locs = [ "Wismar", "Rostock", "Lübeck", "Stralsund", "Frankleben", "Stollberg", "Chemnitz", "Berlin", "Kiel", "Hamburg" ]
 #locs = [ "Halle", "Zwickau", "Leipzig" ]
 #locs = [ "Frankleben" ]
+locs = [ "Erfurt" ]
 
 allNodes = None
 
@@ -84,10 +77,6 @@ for loc in locs:
     dfSPOS, dfedgesNEG = gqtg.getLayer( conn, graph_name, WORKPATH=WORKPATH, overwrite=True,  s1=loc, s2="POS" )
     dfSNEG, dfedgesNEG = gqtg.getLayer( conn, graph_name, WORKPATH=WORKPATH, overwrite=True,  s1=loc, s2="NEG" )
 
-    #######
-    #
-    #  Data Blending Demo ...
-    #
     nodesPOS = dfSPOS.dropna(subset=['lat', 'lon'])
     nodesNEG = dfSNEG.dropna(subset=['lat', 'lon'])
 
@@ -98,11 +87,11 @@ for loc in locs:
     else:
         allNodes = pd.concat([allNodes, allNodesTemp], axis=0)
 
+###################################################################################
+# Using our managed Data4good data asset we can enrich our existing graph layers
 #
-# Enrich all the preloaded data ...
+
 #
-fn = d4g_population.getDumpFileName()
-print(f">>> Local join in data file ... {fn}")
-df = d4g_population.getDataFrame_linked_by_h3Index( allNodes )
-print(f">>> Blending the data in the graph with data from ... {fn}")
-d4g_population.blendIntoMultilayerGraph( conn, df )
+# ... enrich all the preloaded data!
+#
+d4g_population.enrich( conn, allNodes )
