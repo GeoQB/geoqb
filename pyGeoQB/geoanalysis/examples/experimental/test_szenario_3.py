@@ -6,7 +6,7 @@
 # - bulkload into staging area
 
 import sys
-sys.path.append('../')
+sys.path.append('../../../')
 
 #
 # GeoQB dependencies ...

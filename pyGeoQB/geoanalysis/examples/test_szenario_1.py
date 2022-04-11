@@ -11,7 +11,7 @@
 #
 
 import sys
-sys.path.append('./')
+sys.path.append('/')
 
 import geoanalysis.geoqb.geoqb_workspace as gqws
 

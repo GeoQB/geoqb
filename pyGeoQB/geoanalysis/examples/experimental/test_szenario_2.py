@@ -5,7 +5,7 @@
 #  - Data4Good : Population data is linked to h3index cells
 #
 import sys
-sys.path.append('../')
+sys.path.append('../../../')
 
 import os
 import pandas as pd
