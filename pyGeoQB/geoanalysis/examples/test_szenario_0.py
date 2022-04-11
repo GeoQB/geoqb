@@ -9,7 +9,7 @@
 # GeoQB dependencies ...
 #
 import sys
-sys.path.append('./')
+sys.path.append('/')
 
 import geoanalysis.geoqb.geoqb_tg as gqtg
 import os

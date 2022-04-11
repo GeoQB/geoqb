@@ -6,7 +6,7 @@
 # This script shows if all the imports are working as expected.
 #
 import sys
-sys.path.append('./')
+sys.path.append('/')
 
 from datetime import datetime
 import pandas as pd
