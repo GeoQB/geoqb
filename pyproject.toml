@@ -2,6 +2,7 @@
 name = "pyGeoQB"
 version = "0.0.1"
 description = "Multilayer graph management."
+authors = ["M.K.", "E.T."]
 
 [tool.semantic_release]
 version_variable = [
