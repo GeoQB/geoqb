@@ -1,5 +1,5 @@
   
-![img.png](docs/temp_logo.png)
+![img.png](docs/images/temp_logo.png)
 
 # What is the problem we are solving ... and how?
 We focus on solving a data integration problem, not by providing just another data processing pipeline, but rather by introducing
@@ -11,7 +11,7 @@ Sparql queries are used to read data from public triples stores, and Overpass QL
 The data layers will be staged, indexed and integrated in a unified analysis data model, which is managed in the TigerGraph platform. 
 
 
-![img_2.png](docs/img_2.png)
+![img_2.png](docs/images/img_2.png)
 
 Such a managed graph layer represents a particular aspect from a particular knowledge domain.
 Multiple of them can easily be integrated by using custom indexing methods, such as geo-spatial indexing.
@@ -79,25 +79,25 @@ Such a model could help in the future local communities better define needs to b
 
 
 # GeoQB Architecture Overview
-![docs/Architecture-Overview-pyGeoQB.png](docs/Architecture-Overview-pyGeoQB.png)
+![docs/Architecture-Overview-pyGeoQB.png](docs/images/Architecture-Overview-pyGeoQB.png)
 
 # Datamodel
 
 Based on the OSM data we collect via OverPass API or Sophox Sparql endpoint we have
 created the following datamodel:
 
-![img_0.png](docs/img_0.png)
+![img_0.png](docs/images/img_0.png)
 
 Blending more facts into the datamodel can be done in a systematic way.
 Some facts are relevant for all layers, hence we add them tp the h3-cells
 using a generic link with the observed value and timestamp as link attribute.
 
-![img_1.png](docs/img_1.png)
+![img_1.png](docs/images/img_1.png)
 
 The layer-id attribute is used to manage the multilayer aspects of the graph we construct for our analysis szenario.
 
 ## GeoQB Layer Factory
-![img.png](docs/LayerFactory.png)
+![img.png](docs/images/LayerFactory.png)
 
 # How to use this package?
 
@@ -209,7 +209,7 @@ export GEOQB_WORKSPACE=/Users/mkaempf/GITHUB.private/geoqb-playground/KGC-2022)
 
 Support for using _SOLID-Pods_ for sharing your data asset in a well controlled manner is on the way and will be added soon.
 
-[![img.png](docs/temp_logo_pg.png)](https://github.com/GeoQB/geoqb-playground)
+[![img.png](docs/images/temp_logo_pg.png)](https://github.com/GeoQB/geoqb-playground)
 
 GeoQB playground is a Github based data pod with example data used in our hackathon project.
 

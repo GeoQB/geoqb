@@ -15,27 +15,11 @@ sys.path.append('./')
 
 import geoanalysis.geoqb.geoqb_workspace as gqws
 
-import geoanalysis.geoqb.geoqb_plots as gqplots
-
-import geoanalysis.geoqb.geoqb_h3 as gqh3
-
-#import geoanalysis.geoqb.geoqb_kafka as gqk
-
-import geoanalysis.geoqb.geoqb_osm_pandas as gqosm
-
 import geoanalysis.geoqb.geoqb_tg as gqtg
-
-import geoanalysis.geoqb.geoqb_layers as gql
 
 import geoanalysis.geoqb.sample_data.sample_layers as sl
 
-#
-# Python dependencies ...
-#
-import pandas as pd
 from datetime import datetime
-import time
-import copy
 import json
 import os
 
@@ -58,8 +42,9 @@ zoom = 9
 ts = "latest"
 lengths = [ 30 ]
 
-locs = [ "Wismar", "Rostock", "Lübeck", "Stralsund", "Frankleben", "Stollberg", "Chemnitz", "Berlin", "Kiel", "Hamburg" ]
-#locs = [ "Wismar", "Frankleben" ]
+# locs = [ "Wismar", "Rostock", "Lübeck", "Stralsund", "Frankleben", "Stollberg", "Chemnitz", "Berlin", "Kiel", "Hamburg" ]
+# locs = [ "Halle (Saale)", "Jena" ]
+locs = [ "Erfurt" ]
 
 layers = {}
 
@@ -131,16 +116,27 @@ def loadDataFromWeb(locs, lengths, load_layer_tags = True, load_full_set_of_tags
 
             print( f"#  Process layer {i} : {multiLayer.qn}")
 
-            multiLayer.plotMultiLayerData( path_offset = path_offset )
+            # multiLayer.plotMultiLayerData( path_offset = path_offset )
 
-            multiLayer.persistDataFrames( path_offset )
+            # multiLayer.persistDataFrames( path_offset )
 
-            multiLayer.stageLayerDataInTigerGraph( path_offset, conn )
+            # multiLayer.stageLayerDataInTigerGraph( path_offset, conn )
 
             # layer.stageLayerDataInKafkaTopic( path_offset = path_offset, topic_name = topic )
 
             #### DEPENDENCY ON Gecko-Driver must be managed or removed ...
             # multiLayer.showHexagonMap( path_offset )
+
+        print( f">>> Your layerstack for {len(layers)} layers around {len(locs)} locations has been created in : {path_offset}.")
+        for loc in locs:
+            print( f">    {loc} ")
+
+        print( f"\n>>> Your layer data is provided by 'Sophox Service' and cover the following aspects: ")
+        for lkey in layers:
+            print( f">    {lkey} ")
+        print( f">>> Layer-Metadata is located in {path_offset}md. \n")
+        print( f">>> For data validation please use the images generated in:\n   {path_offset}single_layer_images and \n   {path_offset}multi_layer_images. \n ")
+
 
 
 
@@ -180,6 +176,11 @@ loadDataFromWeb( locs=locs , lengths=lengths,
                  load_full_set_of_tags = False )
 
 gqtg.showStats( conn, graph_name )
+
+
+
+
+
 
 
 

@@ -15,32 +15,12 @@ sys.path.append('./')
 
 import os
 
-import geoanalysis.geoqb.geoqb_plots as gqplots
-
-import geoanalysis.geoqb.geoqb_h3 as gqh3
-
-import geoanalysis.geoqb.geoqb_kafka as gqk
-
-import geoanalysis.geoqb.geoqb_osm_pandas as gqosm
+import geoanalysis.geoqb.geoqb_workspace as gqws
 
 import geoanalysis.geoqb.geoqb_tg as gqtg
 
 import geoanalysis.geoqb.geoqb_layers as gql
-
-import geoanalysis.geoqb.sample_data.sample_layers as sl
-
-import networkx as nx
-
-
-
-#
-# Python dependencies ...
-#
-import pandas as pd
 from datetime import datetime
-import time
-import copy
-import json
 import glob
 
 
@@ -75,10 +55,11 @@ def readDataFromDrive():
     #
     # Process metadata files which describe layers ...
     #
-    print( "Path: " + path_offset )
+    print( f"\n>>> GeoQB data storae path: {path_offset}" )
 
-    file_list = glob.glob(path_offset + "/graphs/Wi*_MD.json") # Include slash or it will search in the wrong directory!!
-    print('file_list {}'.format(file_list))
+    file_list = glob.glob(path_offset + "/md/Wi*_MD.json") # Include slash or it will search in the wrong directory!!
+
+    print( f">   {len(file_list)} layers are staged for processing." )
     print()
 
     #####################################################################
@@ -90,18 +71,22 @@ def readDataFromDrive():
 
         layer = gql.SophoxLayer( fileName=fn )
 
-        layer.plotLayerData( path_offset )
+        #layer.plotLayerData( path_offset )
 
-        layer.persistDataFrames( path_offset )
+        #layer.persistDataFrames( path_offset )
 
-        layer.stageLayerDataInTigerGraph( path_offset, conn )
+        #layer.stageLayerDataInTigerGraph( path_offset, conn )
 
         #print( layer.toJSON() )
 
         #layer.stageLayerDataInKafkaTopic( path_offset = path_offset, topic_name = topic )
 
-
-
+#####################################################
+#  Extracted data will be stored in this folder.
+#  - it can be a mounted Google Drive folder, or a volume, or a local path.
+#
+#path_offset = "./workspace"
+path_offset = gqws.prepareWorkspaceFolders()
 
 
 #####################################################
