@@ -2,6 +2,8 @@
 
 _The GeoQB project makes multilayer graph management as easy as making a cake._
 
+What [Terraform](https://www.terraform.io/) is for managing cloud applications, GeoQB is for multi-facet graph data management.
+
 -----
 
 _pyGeoQB_ is our first public module in this repository. We have created it during the "Graph FOR All" hackathon and submitted it to the "Graph FOR All" Challenge. 
