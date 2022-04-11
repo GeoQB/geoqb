@@ -39,8 +39,12 @@ user="mirko"
 topic = "OSM_nodes_stage"
 topicQMD = "QMD_OSM_nodes_stage"
 
-# Extracted data will be stored in this mounted Google Drive folder:
-path_offset = "./workspace"
+#####################################################
+#  Extracted data will be stored in this folder.
+#  - it can be a mounted Google Drive folder, or a volume, or a local path.
+#
+#path_offset = "./workspace"
+path_offset = gqws.prepareWorkspaceFolders()
 
 #zoom = 12
 zoom = 9

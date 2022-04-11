@@ -96,5 +96,11 @@ def blendIntoMultilayerGraph( conn, df ):
 
 
 
+def enrich( conn, df ):
+    fn = getDumpFileName()
+    print(f">>> Local join in data file ... {fn}")
+    df = getDataFrame_linked_by_h3Index( df )
+    print(f">>> Blending the data in the graph with data from ... {fn}")
+    blendIntoMultilayerGraph( conn, df )
 
 

@@ -162,9 +162,9 @@ def getTagLayerForResolutionForOSMGraph( conn, graph_name, WORKPATH="./temp/", r
         data = json.load(f)
         f.close
 
-    print( "******************************")
-    print( ">>> JSON DATA LENGTH: " + str(len(data)) )
-    print( "##############################")
+    print( "**********************************************")
+    print( f"* Nr of item sets in graph export query: {len(data)}" )
+    print( "**********************************************")
 
     dfS = pd.DataFrame(data[0]["nodes1"])
     dfS = flat_table.normalize(dfS)
@@ -178,12 +178,7 @@ def getTagLayerForResolutionForOSMGraph( conn, graph_name, WORKPATH="./temp/", r
     })
 
     dfS.to_csv(path_to_nodelist_file, index=False, sep ='\t')
-
-    #print( dfnetwork )
-    print( "### NETWORK ###")
-    print( "###############")
-
-    print( "\n###############")
+    print( ">   item set 'nodes1' ... DONE.")
 
     dfedges = pd.DataFrame(data[1]["@@edgeset"])
 
@@ -194,22 +189,7 @@ def getTagLayerForResolutionForOSMGraph( conn, graph_name, WORKPATH="./temp/", r
 
     dfedges = flat_table.normalize(dfedges)
     dfedges.to_csv(path_to_edgelist_file, index=False, sep ='\t')
-    print( "###  EDGES  ###")
-    print( "###############")
+    print( ">   item set '@@edgeset' ... DONE.")
 
     return dfS, dfedges
 
-    #dfFNetwork = flat_table.normalize(dfnetwork)
-
-    #print( dfFNetwork )
-    #print( dfFedges )
-
-    #G = nx.from_pandas_edgelist(df2, 'Source', 'Target')
-    #nx.write_edgelist(G, "test_edgelist.csv", delimiter="\t" )
-    #print( "G" )
-    #print( G )
-
-    #nx.draw(G)
-    # nx.draw_spectral(G)
-
-    #plt.savefig('test_graph.png')

@@ -1,11 +1,8 @@
 #!/bin/bash
 
+python3 -m venv $1
+source $1/bin/activate
+
 pip install --upgrade pip
 pip install --upgrade -q gspread
-pip install googlemaps polyline
-pip install mysql-connector-python sqlalchemy pymysql
-pip install networkx
-pip install node2vec
-pip install pyTigerGraph
-pip install flat-table
-pip install wordcloud
+pip install -r requirements.txt

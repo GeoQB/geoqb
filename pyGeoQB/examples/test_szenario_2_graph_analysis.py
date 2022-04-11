@@ -4,7 +4,7 @@ import sys
 sys.path.append('./')
 
 import warnings
-#warnings.filterwarnings('ignore')
+warnings.filterwarnings('ignore')
 
 import os
 
@@ -22,18 +22,12 @@ import pandas as pd
 from gensim.models import KeyedVectors
 from gensim.models import Word2Vec
 
-#import matplotlib.patches as mpatches
-#import pyTigerGraph as tg
-#import traceback
-#import pandas as pd
-
 
 from urllib.request import urlopen
 import json
 import flat_table
 import plotly.express as px
 from string import Template
-
 
 import geoanalysis.geoqb.geoqb_workspace as gqws
 
@@ -50,7 +44,7 @@ path_offset = gqws.prepareWorkspaceFolders()
 #
 # a working path within the workspace ...
 #
-WORKPATH = path_offset + "/ga4/"
+WORKPATH = path_offset + "/ga_2_node2vec_kmeans/"
 
 
 ######################################################
@@ -72,15 +66,13 @@ print( conn )
 #
 print(">>> Start graph extraction ...")
 dfNodes, dfEdges = gqtg.getFullGraph2( conn, graph_name, WORKPATH=WORKPATH )
-print(">>> Graph data loaded ...")
+print(">   Graph data loaded ...")
 
-print(dfNodes)
-print(dfEdges)
+#print(dfNodes)
+#print(dfEdges)
 
-G = nx.from_pandas_edgelist(dfEdges, 'Source', 'Target')
-
-# Create a graph
-graph = G
+# Create a graph using networkx library ...
+graph = nx.from_pandas_edgelist(dfEdges, 'Source', 'Target')
 
 print(">>> Networkx-graph constructed ...")
 
@@ -107,7 +99,7 @@ if file1_exists and file2_exists:
 else:
 
   # Precompute probabilities and generate walks - **ON WINDOWS ONLY WORKS WITH workers=1**
-  node2vec = Node2Vec(graph, dimensions=32, walk_length=20, num_walks=100, workers=4)  # Use temp_folder for big graphs
+  node2vec = Node2Vec(graph, dimensions=64, walk_length=10, num_walks=25, workers=4)  # Use temp_folder for big graphs
 
   # Embed nodes
   model = node2vec.fit(window=10, min_count=1, batch_words=4)  # Any keywords acceptable by gensim.Word2Vec can be passed, `dimensions` and `workers` are automatically passed (from the Node2Vec constructor)
@@ -133,7 +125,8 @@ else:
 
 
 
-# Embed edges using Hadamard method
+
+print( ">>> Embed edges using Hadamard method.")
 from node2vec.edges import HadamardEmbedder
 
 edges_embs = HadamardEmbedder(keyed_vectors=model.wv)
@@ -149,15 +142,23 @@ figure = plt.figure(figsize=(11, 9))
 ax = figure.add_subplot(111)
 
 ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1])
-plt.savefig(WORKPATH + "/embeddings_2d.png")
-
+fn=WORKPATH + "/embeddings_2d.png"
+plt.savefig(fn)
 plt.clf()
+print( f">  2D embeddings are plotted in {fn}.")
+print( ">>> Done.")
+
 
 print(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-print(" >>> examples: compare some nodes:")
-print (model.wv.similarity('861f18807ffffff', '861f18807ffffff'))
-print (model.wv.similarity('861f18807ffffff', '861f1895fffffff'))
-print (model.wv.most_similar(positive=['861f18807ffffff'], negative=[], topn=5))
+print(" > Examples: compare some nodes:")
+
+try:
+  print (model.wv.similarity('861f18807ffffff', '861f18807ffffff'))
+  print (model.wv.similarity('861f18807ffffff', '861f1895fffffff'))
+  print (model.wv.most_similar(positive=['861f18807ffffff'], negative=[], topn=5))
+except:
+  print( "    Test nodes not available .... but this is not a problem. Let's continue. ")
+
 print(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 from sklearn.decomposition import PCA
@@ -204,16 +205,14 @@ print( dfr )
 gr = dfr.groupby("cluster") #.count()
 print( gr )
 
-print(">>> PCA and K-Means culstering analysis done ...")
-
 from wordcloud import WordCloud
 
 for i in range(0,8):
   group = gr.get_group(str(i))
 
   text2 = "\n ".join(v_id for v_id in group.v_id)
-
-  f = open( f"{WORKPATH}/cluster_{i}.json", "w")
+  fn = f"{WORKPATH}/cluster_{i}.json"
+  f = open( fn, "w")
   f.write( text2 )
   f.close()
 
@@ -224,10 +223,11 @@ for i in range(0,8):
   # Display the generated Word Cloud
 
   plt.imshow(word_cloud2, interpolation='bilinear')
-
+  fn = f"{WORKPATH}/cluster_{i}.png"
   plt.axis("on")
-  #plt.show()
+  plt.savefig(fn)
   plt.clf()
+  #plt.show()
 
 #predict the labels of clusters.
 label = kmeans.fit_predict(Z)
@@ -253,6 +253,10 @@ for x in range( 0,5 ):
       plt.savefig( f"{WORKPATH}/kmeans-clustering-of-node-vectors-{x}-{y}.png")
 
 exit()
+
+print(">>> PCA and K-Means culstering analysis done ...")
+print(f">   Results are stored in {WORKPATH} ...")
+
 
 
 

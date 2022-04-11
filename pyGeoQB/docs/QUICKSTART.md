@@ -28,7 +28,7 @@ The following variables must be defined in your _env.sh_ file.
 ``` 
 #!/bin/bash
 
-#!/bin/bash
+source $1/bin/activate
 
 ### WORKSPACE path
 #
@@ -71,5 +71,23 @@ export sasl_password="..."
 export schema_registry_url="..."
 export basic_auth_credentials_source="USER_INFO"
 export basic_auth_user_info="...:..."
+```
 
+## Step 5 : Setup your virtual environment and install dependencies
+Using the provided **bootstrap.sh** script you create a virtual envionment.
+We activate it and install the required libraries.
+
+In the following example we use **env1** as name of our virtual environment. 
+
+```
+script/bootstrap.sh env1
+```
+
+In order to load all sensitive custom parameters in your **env.sh** file, we use the following command:
+
+```
+source env/env.sh env1; python3 examples/test_szenario_1a.py
+```
+
+This line will execute the **test_szenario1a** which is provided in the **examples** folder.
 
