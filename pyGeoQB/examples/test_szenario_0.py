@@ -14,8 +14,8 @@ sys.path.append('./')
 import geoanalysis.geoqb.geoqb_tg as gqtg
 import os
 
-#import warnings
-#warnings.filterwarnings('ignore')
+import warnings
+warnings.filterwarnings('ignore')
 
 #####################################################
 #  Some variables ...

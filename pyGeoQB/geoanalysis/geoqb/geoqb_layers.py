@@ -12,8 +12,6 @@ import json
 
 import pandas as pd
 
-import geoanalysis.geoqb.geoqb_kafka as gqk
-#print( gqk.producer )
 
 #
 # The run_id becomes part of the filenames of all BLOBS created in an analysis
@@ -286,9 +284,20 @@ class LayerSpecification:
 
     def initFromMDFile(self, mdFileName):
         f = open( mdFileName, "r")
-        data = json.load(f)
+        dataRaw = json.load(f)
         f.close()
-        print(data)
+
+        #
+        #
+        #
+        try:
+            data = dataRaw[0]
+            print(  )
+            print( ">>> Multi-Layer processing is under construction ... works from generator, not yet from loader.")
+            print( f">   Used only the first available layer in {mdFileName}! ")
+            print( f">   Ignored {len(dataRaw)-1} layers in {mdFileName}")
+        except:
+            data = dataRaw
 
         self.location_name = data['location_name']
         self.zoom = data['zoom']
