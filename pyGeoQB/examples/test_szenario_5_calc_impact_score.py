@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/')
+sys.path.append('./')
 
 from geopy import distance
 
@@ -77,7 +77,8 @@ conn, token = gqtg.initTG( graph_name=graph_name, username=TG_USERNAME, password
 print( conn )
 
 #locs = [ "Frankleben" ]
-locs = [ "Wismar", "Rostock", "Lübeck", "Stralsund", "Frankleben", "Stollberg", "Chemnitz", "Berlin", "Kiel", "Hamburg" ]
+#locs = [ "Wismar", "Rostock", "Lübeck", "Stralsund", "Frankleben", "Stollberg", "Chemnitz", "Berlin", "Kiel", "Hamburg" ]
+locs = [ "Bonn" ]
 
 run=3
 file = gqws.getFileHandle( path="impact-score-dev", fn=f"impact-score-0{run}.tsv" ) ### MAKE an automatic counter for placehoder x
@@ -123,4 +124,53 @@ for loc in locs:
     file.flush()
 
 file.close()
-exit()
+
+
+def calc_score( location_name ):
+
+    run=3
+    file = gqws.getFileHandle( path="impact-score-dev", fn=f"impact-score-0{run}.tsv" ) ### MAKE an automatic counter for placehoder x
+
+    file.write("DURATION\tLOC\tzPOS\tzNEG\tzALl\tposM\tposM/allMAX\tmath.sqrt(posZ)\tposMAX\tallM\tallM/allMAX\tmath.sqrt(allZ)\tallMAX\tnegM\tnegM/allMAX\tmath.sqrt(negZ)\tnegMAX\n")
+
+    from datetime import datetime
+
+    t1 = datetime.now()
+
+    print( f"************** Customized Impact Score for area around {location_name} **************")
+    dfNodesPOS, dfEdgesPOS = gqtg.getLayer( conn, graph_name, WORKPATH=WORKPATH, overwrite=False,  s1=location_name, s2="POS" )
+    dfNodesNEG, dfEdgesNEG = gqtg.getLayer( conn, graph_name, WORKPATH=WORKPATH, overwrite=False,  s1=location_name, s2="NEG" )
+    #dfNodesALL, dfEdgesALL = gqtg.getLayer( conn, graph_name, WORKPATH=WORKPATH, overwrite=False,  s1=loc, s2="AllTags" )
+
+    dfNodesALL = pd.concat([dfNodesPOS,dfNodesNEG])
+
+    dfNodesPOS = dfNodesPOS[['lat','lon']].dropna(subset=['lat', 'lon'])
+    dfNodesALL = dfNodesALL[['lat','lon']].dropna(subset=['lat', 'lon'])
+    dfNodesNEG = dfNodesNEG[['lat','lon']].dropna(subset=['lat', 'lon'])
+
+    print ( "POS", len(dfNodesPOS) )
+    print ( "NEG", len(dfNodesNEG) )
+    print ( "ALL", len(dfNodesALL) )
+
+    posM, posZ, posMAX = calcAverageDistanceForAllPoints1( dfNodesPOS )
+
+    negM, negZ, negMAX = calcAverageDistanceForAllPoints1( dfNodesNEG )
+
+    allM, allZ, allMAX = calcAverageDistanceForAllPoints1( dfNodesALL )
+
+    print(  "POS", posM, posM/allMAX, math.sqrt(posZ), posMAX )
+    print(  "ALL", allM, allM/allMAX, math.sqrt(allZ), allMAX )
+    print(  "NEG", negM, negM/allMAX, math.sqrt(negZ), negMAX )
+
+    t2 = datetime.now()
+
+    duration = t2-t1
+
+    file.write(  f"{duration}\t{loc}\t{len(dfNodesPOS)}\t{len(dfNodesNEG)}\t{len(dfNodesALL)}\t{posM}\t{posM/allMAX}\t{math.sqrt(posZ)}\t{posMAX}\t{allM}\t{allM/allMAX}\t{math.sqrt(allZ)}\t{allMAX}\t{negM}\t{negM/allMAX}\t{math.sqrt(negZ)}\t{negMAX}\n"  )
+    file.flush()
+
+    file.close()
+
+
+
+

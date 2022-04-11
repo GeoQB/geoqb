@@ -8,7 +8,6 @@
 import click
 import sys
 sys.path.append('./')
-import geoanalysis.geoqb
 
 import geoanalysis.geoqb.geoqb_workspace as gqws
 
@@ -19,12 +18,31 @@ import geoanalysis.geoqb.geoqb_workspace as gqws
 #path_offset = "./workspace"
 path_offset = gqws.prepareWorkspaceFolders( verbose=False )
 
-import click
+import glob
+import plac
+from pathlib import Path
 import json
 
+from datetime import datetime
 
-def main():
-    print("\n .... W.I.P!")
+
+
+def main(ws, cmd='ls', verbose=False, folder='md'):
+    print( f"ENV GEOQB_WORKSPACE: {path_offset}")
+    if cmd=="ls":
+        print( f"CMD: {cmd} <verbos:{verbose}>")
+        globs = glob.glob(f"{path_offset}/{folder}/*")
+        locs = {}
+        for g in globs:
+            if verbose:
+                print( g )
+            p = g[len(path_offset)+4:].split("_")[0]
+            locs[p]=g
+        print( f"\n> {len(globs)} individual layers in multi-layer-graph workspace." )
+        print( f"> {len(locs)} locations." )
+        print( f"> {locs.keys()}" )
+    else:
+        print( f"CMD {cmd} <verbos:{verbose}> not yet implemented.")
 
 if __name__ == '__main__':
-    main()
+    plac.call(main)
