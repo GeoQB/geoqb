@@ -1,5 +1,5 @@
 ### pyGeoQB specific ignores ...
-workspace/
+workspace/**
 env/
 .idea/
 ../.DS_Store/**
