@@ -5,7 +5,7 @@ _The GeoQB project makes multilayer graph management as easy as making a cake._
 What [Terraform](https://www.terraform.io/) is for managing cloud applications, GeoQB is for multi-facet graph data management.
 
 ## How Terraform inspires the work on GeoQB?
-_Write, Plan, Apply_ (<-- from Terraform website)
+_Write, Plan, Apply_ <--- from Terraform website
 
 GeoQB is an open-source datastructure as code software tool that provides a consistent CLI workflow to manage hundreds of cloud data services. GeoQB codifies cloud APIs into declarative configuration files. this way it allows you to manage the state of large scale graph applications on TigerGraph.
 
