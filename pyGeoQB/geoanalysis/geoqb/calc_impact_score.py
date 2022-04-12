@@ -105,10 +105,10 @@ def calc_score( location_name, conn, WORKPATH, run, graph_name ):
 
     file.close()
 
-    print( f"PROCESSING TIME: {duration} ")
-    print( f"ESTIMATED TIME : {tEstimate} s")
-    print( f"Results written to file: {file.name}")
+    print( f"> PROCESSING TIME: {duration} ")
+    print( f"> ESTIMATED TIME : {tEstimate} s")
 
+    return file.name
 
 
 

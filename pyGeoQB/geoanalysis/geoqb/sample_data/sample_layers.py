@@ -8,7 +8,7 @@ def getSampleLayerStack9( layer, path_offset ):
     #----------------------------------
     attr = [
         ("Services_POS" , "amenity",  '"kindergarten" "library" "music_school" "school" "clinic" "dentist" "doctors" "pharmacy" "theatre" "childcare" "marketplace"'),
-        ("Services_POS" , "emergency" , None )
+        ("Services_POS" , "newstuff" , None )
     ]
     attr_weight = 1
     return ( "Services_POS", defineSampleLayerStack( layer, attr, attr_weight, path_offset ) )
