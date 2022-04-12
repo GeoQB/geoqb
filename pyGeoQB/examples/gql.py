@@ -71,6 +71,9 @@ def topolgy_inspection():
     import geoanalysis.geoqb.graph_analyser as ga
     ga.analyseClusters( graph_name, conn, WORKPATH )
 
+    print( f"> Calculated topology information has been stored in {WORKPATH}.")
+
+
 
 
 
@@ -88,7 +91,10 @@ def calc_impact_score_for_layer_stack( location_name ):
     conn, graph_name = getConnection()
 
     import geoanalysis.geoqb.calc_impact_score as scorer
-    scorer.calc_score( location_name, conn, WORKPATH, 10, graph_name )
+    rfn = scorer.calc_score( location_name, conn, WORKPATH, 10, graph_name )
+
+    print( f"> Calculated scores have been appended to {rfn} in {WORKPATH}.")
+
 
 
 
@@ -108,6 +114,9 @@ def export_layer_stack(location_name, type="sophox", graph_name="OSMLayers_Demo6
     dfSPOS, dfedgesNEG = gqtg.getLayer( conn, graph_name, WORKPATH=WORKPATH, overwrite=True,  s1=location_name, s2="POS" )
     dfSNEG, dfedgesNEG = gqtg.getLayer( conn, graph_name, WORKPATH=WORKPATH, overwrite=True,  s1=location_name, s2="NEG" )
 
+    print( f"> Exported graph data is stored in {WORKPATH}.")
+
+
 def export_all_layer_stack(location_name, type="sophox", graph_name="OSMLayers_Demo6a", zoom=9, dryRun=False):
 
     path_offset = gqws.prepareWorkspaceFolders()
@@ -118,7 +127,6 @@ def export_all_layer_stack(location_name, type="sophox", graph_name="OSMLayers_D
     #
     from pathlib import Path
     Path(WORKPATH).mkdir(parents=True, exist_ok=True)
-
 
     conn, graph_name = getConnection()
 
@@ -159,28 +167,37 @@ def create_layer_stack(location_name, type="sophox", zoom=9, dryRun=False):
 
     print( f"> Local graph data stored graph workspace.")
 
+def getLayerNames(path_offset):
+    globs = glob.glob(f"{path_offset}md/*")
+    locs = {}
+    for g in globs:
+        p = g[len(path_offset)+3:].split("_")[0]
+        locs[p]=g
+    return locs
 
 
-def main( cmd: ("ls|create|ingest|extract|extract-all|calc-impact-score|ca"), name='*', verbose=False):
+def main( cmd: ("ls|create|ingest|extract|extract-all|calc-impact-score|ca"), layer_name='*', verbose=False):
 
-    print( f"ENV GEOQB_WORKSPACE: {path_offset}")
+    print( f"ENV: GEOQB_WORKSPACE: {path_offset}")
+    print( f"CMD: {cmd} <verbose:{verbose}>")
 
     if cmd=="ls":
-        print( f"CMD: {cmd} <verbos:{verbose}>")
-        print( f"{path_offset}/md/{name}*")
+        print( f"WS : {path_offset}md/{layer_name}")
 
-        globs = glob.glob(f"{path_offset}/md/{name}")
+        globs = glob.glob(f"{path_offset}md/{layer_name}")
         locs = {}
         for g in globs:
             if verbose:
                 print( g )
-            p = g[len(path_offset)+4:].split("_")[0]
+            p = g[len(path_offset)+3:].split("_")[0]
             locs[p]=g
         print( f"\n> {len(globs)} individual layers in multi-layer-graph workspace." )
         print( f"> {len(locs)} locations:" )
         print( f"* {locs.keys()}" )
 
     elif cmd=="create":
+        locs = getLayerNames(path_offset)
+        print( f"> {len(locs)} locations: {locs.keys()}" )
         location = input("> new location: " )
         print( f"[{location}]" )
         type = input("> layer type: (Sophox) " )
@@ -237,7 +254,7 @@ def main( cmd: ("ls|create|ingest|extract|extract-all|calc-impact-score|ca"), na
 
 
     else:
-        print( f"CMD {cmd} <verbos:{verbose}> not yet implemented.")
+        print( f"!!! {cmd} !!! not yet implemented.")
 
 if __name__ == '__main__':
     plac.call(main)
