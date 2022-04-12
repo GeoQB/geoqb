@@ -21,7 +21,7 @@ DOWNLOAD_URLS={
     "population_deu.csv.zip" : "https://data.humdata.org/dataset/7d08e2b0-b43b-43fd-a6a6-a308f222cdb2/resource/77a44470-f80a-44be-9bb2-3e904dbbe9b1/download/population_deu_2019-07-01.csv.zip",
 }
 
-FILE_NAMES=["population_deu_2019-07-01.csv"]
+FILE_NAMES=["population_deu_2019-07-01.csv.zip"]
 #
 #########################
 
@@ -47,7 +47,7 @@ def getDataFrame_linked_by_h3Index( dfIndexesToEnrich, indexColumn="h3index", re
     print( dfIndexesToEnrich )
     FN = DS_STAGE_PATH + FILE_NAMES[0]
     print( f">>> Read data file: {FN}")
-    enrichmentData = pd.read_csv( FN, sep="," )
+    enrichmentData = pd.read_csv( FN, sep=",", compression="zip" )
     print( enrichmentData )
 
     print( f">>> Calc h3index ...")
@@ -70,6 +70,7 @@ def getDataFrame_linked_by_h3Index( dfIndexesToEnrich, indexColumn="h3index", re
         enrichmentData.to_csv( fn , index=True, sep ='\t')
 
     return enrichmentData
+
 
 
 def blendIntoMultilayerGraph( conn, df ):

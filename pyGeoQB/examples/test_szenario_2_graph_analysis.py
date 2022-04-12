@@ -41,6 +41,9 @@ sns.set_style('whitegrid')
 SECRET = os.environ.get('TG_SECRET')
 path_offset = gqws.prepareWorkspaceFolders()
 
+
+
+
 #
 # a working path within the workspace ...
 #
@@ -197,6 +200,11 @@ print(dfLabel)
 
 results = np.array(list(zip(nodeNames,dfLabel)))
 
+
+import pandas as pd
+pd.DataFrame(results).to_csv( f"{WORKPATH}/nodeLabels.tsv" , index=True, sep ='\t' )
+
+
 dfr = pd.DataFrame(results, columns=('v_id','cluster'))
 print( dfr )
 
@@ -211,7 +219,7 @@ for i in range(0,8):
   group = gr.get_group(str(i))
 
   text2 = "\n ".join(v_id for v_id in group.v_id)
-  fn = f"{WORKPATH}/cluster_{i}.json"
+  fn = f"{WORKPATH}/cluster_{i}.txt"
   f = open( fn, "w")
   f.write( text2 )
   f.close()

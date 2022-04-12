@@ -11,7 +11,7 @@
 # GeoQB dependencies ...
 #
 import sys
-sys.path.append('/')
+sys.path.append('./')
 
 import geoanalysis.geoqb.data4good.HighResolutionPopulationDensityMapsAndDemographicEstimates as d4g_population
 import geoanalysis.geoqb.geoqb_tg as gqtg
@@ -60,16 +60,17 @@ print( conn )
 #
 # Just load the full graph ...
 #
-gqtg.getFullGraph2( conn, graph_name, WORKPATH=WORKPATH, overwrite=True )
+#gqtg.getFullGraph2( conn, graph_name, WORKPATH=WORKPATH, overwrite=True )
 
 
 #
 # Iterate over individual layers ...
 #
-locs = [ "Wismar", "Rostock", "Lübeck", "Stralsund", "Frankleben", "Stollberg", "Chemnitz", "Berlin", "Kiel", "Hamburg" ]
+#locs = [ "Wismar", "Rostock", "Lübeck", "Stralsund", "Frankleben", "Stollberg", "Chemnitz", "Berlin", "Kiel", "Hamburg" ]
 #locs = [ "Halle", "Zwickau", "Leipzig" ]
 #locs = [ "Frankleben" ]
-locs = [ "Erfurt" ]
+
+locs = [ "Helmershausen", "Chorin" ]
 
 allNodes = None
 

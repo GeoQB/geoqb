@@ -9,7 +9,9 @@ import click
 import sys
 sys.path.append('./')
 
+import glob
 import geoanalysis.geoqb.geoqb_workspace as gqws
+import plac
 
 #####################################################
 #  Extracted data will be stored in this folder.
@@ -19,21 +21,20 @@ import geoanalysis.geoqb.geoqb_workspace as gqws
 path_offset = gqws.prepareWorkspaceFolders( verbose=False )
 WORKPATH = f"{path_offset}/sample_clusters/" # needed by individual tools ...
 
-import glob
-import plac
 from pathlib import Path
+from datetime import datetime
 import json
 
-from datetime import datetime
 
 
-
-def main( cmd: ('(ls|init|clear)'), folder: ('(md|raw|stage)' ), verbose=False, ):
+def main( cmd: ('(ls|init|clear)'), folder: ('(md|raw|stage)','option',"f" ), verbose=False, ):
 
     print( f"ENV GEOQB_WORKSPACE: {path_offset}")
     if cmd=="ls":
+
         if folder=="md":
-            print( f"CMD: {cmd} <verbos:{verbose}>")
+
+            print( f"CMD: {cmd} <verbose:{verbose}>")
             globs = glob.glob(f"{path_offset}/{folder}/*")
             locs = {}
             for g in globs:
@@ -41,15 +42,14 @@ def main( cmd: ('(ls|init|clear)'), folder: ('(md|raw|stage)' ), verbose=False, 
                     print( g )
                 p = g[len(path_offset)+4:].split("_")[0]
                 locs[p]=g
-        print( f"\n> {len(globs)} individual layers in multi-layer-graph workspace." )
-        print( f"> {len(locs)} locations." )
-        print( f"> {locs.keys()}" )
-        s_in_bytes = gqws.get_size()
-        print( f"> Total capacity: {s_in_bytes/1024/1024/1024:.2f} GB.")
-
+            print( f"\n> {len(globs)} individual layers in multi-layer-graph workspace." )
+            print( f"> {len(locs)} locations." )
+            print( f"> {locs.keys()}" )
+            s_in_bytes = gqws.get_size()
+            print( f"> Total capacity: {s_in_bytes/1024/1024/1024:.2f} GB.")
 
     elif cmd=="init":
-        print( f"CMD: {cmd} <verbos:{verbose}>")
+        print( f"CMD: {cmd} <verbose:{verbose}>")
         gqws.prepareWorkspaceFolders( verbose=True )
 
     elif cmd=="clear":

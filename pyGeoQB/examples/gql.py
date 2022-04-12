@@ -196,10 +196,22 @@ def main( cmd: ("(ls|create|ingest|extract|extract-all|calc-impact-score|ca)"), 
         print( f"* {locs.keys()}" )
 
     elif cmd=="create":
+        selected = ""
+        if ( len(layer_name) > 1 ):
+            selected = layer_name
         locs = getLayerNames(path_offset)
         print( f"> {len(locs)} locations: {locs.keys()}" )
-        location = input("> new location: " )
-        print( f"[{location}]" )
+        location = input(f"> new location ({selected}): " )
+        print( f"* your input: [{location}]" )
+        if location=="":
+            location = selected
+        if selected not in locs:
+            print( f"* The selection {location} is not available in the list of LAYER STACKS: {locs.keys()}")
+            exit()
+        else:
+            print( f"> Continue with {location}.")
+
+
         type = input("> layer type: (Sophox) " )
         if len(type) == 0:
             type = "sophox"
@@ -264,7 +276,6 @@ def main( cmd: ("(ls|create|ingest|extract|extract-all|calc-impact-score|ca)"), 
         go = input("> Analyse the full graph ... (node2vec + k-means + word-clouds) " )
 
         topolgy_inspection()
-
 
     else:
         print( f"!!! {cmd} !!! is not yet implemented.")
