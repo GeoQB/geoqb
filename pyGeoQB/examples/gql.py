@@ -254,7 +254,7 @@ def main( cmd: ("ls|create|ingest|extract|extract-all|calc-impact-score|ca"), la
 
 
     else:
-        print( f"!!! {cmd} !!! not yet implemented.")
+        print( f"!!! {cmd} !!! is not yet implemented.")
 
 if __name__ == '__main__':
     plac.call(main)
