@@ -165,7 +165,7 @@ def create_layer_stack(location_name, type="sophox", zoom=9, dryRun=False):
         multiLayer.plotMultiLayerData( path_offset = path_offset )
         multiLayer.persistDataFrames( path_offset )
 
-    print( f"> Local graph data stored graph workspace.")
+    print( f"> Local graph data stored in the graph workspace {path_offset}.")
 
 def getLayerNames(path_offset):
     globs = glob.glob(f"{path_offset}md/*")
@@ -176,7 +176,7 @@ def getLayerNames(path_offset):
     return locs
 
 
-def main( cmd: ("ls|create|ingest|extract|extract-all|calc-impact-score|ca"), layer_name='*', verbose=False):
+def main( cmd: ("(ls|create|ingest|extract|extract-all|calc-impact-score|ca)"), layer_name='*', verbose=False):
 
     print( f"ENV: GEOQB_WORKSPACE: {path_offset}")
     print( f"CMD: {cmd} <verbose:{verbose}>")
@@ -207,8 +207,21 @@ def main( cmd: ("ls|create|ingest|extract|extract-all|calc-impact-score|ca"), la
         create_layer_stack( location_name=location, type=type )
 
     elif cmd=="ingest":
-        location = input("> new location: " )
-        print( f"[{location}]" )
+        selected = ""
+        if ( len(layer_name) > 1 ):
+            selected = layer_name
+        locs = getLayerNames(path_offset)
+        print( f"> {len(locs)} locations: {locs.keys()}" )
+        location = input(f"> select location ({selected}): " )
+        print( f"* your input: [{location}]" )
+        if location=="":
+            location = selected
+        if selected not in locs:
+            print( f"* The selection {location} is not available in the list of LAYER STACKS: {locs.keys()}")
+            exit()
+        else:
+            print( f"> Continue with {location}.")
+
         #type = input("> layer type: (Sophox) " )
         #if len(type) == 0:
         type = "sophox"
