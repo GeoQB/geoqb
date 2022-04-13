@@ -175,7 +175,7 @@ def getLayerNames(path_offset):
     return locs
 
 
-def main( cmd: ("(ls|create|ingest|extract|extract-all|calc-impact-score|clusters)"), layer_name='*', verbose=False):
+def main( cmd: ("(ls|create|rm|ingest|extract|extract-all|calc-impact-score|clusters)"), layer_name='*', verbose=False):
 
     print( f"ENV: GEOQB_WORKSPACE: {path_offset}")
     print( f"CMD: {cmd} <verbose:{verbose}>")

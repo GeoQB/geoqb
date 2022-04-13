@@ -45,7 +45,7 @@ def main( cmd: ('(ls|init|clear)'), folder: ('(md|raw|stage)','option',"f" ), ve
             print( f"\n> {len(globs)} individual layers in multi-layer-graph workspace." )
             print( f"> {len(locs)} locations." )
             print( f"> {locs.keys()}" )
-            s_in_bytes = gqws.get_size()
+            s_in_bytes = gqws.get_size(path_offset)
             print( f"> Total capacity: {s_in_bytes/1024/1024/1024:.2f} GB.")
 
     elif cmd=="init":
