@@ -1,5 +1,5 @@
 from pyfiglet import Figlet
-
+version = "0.2.0"
 f = Figlet(font='doom')
 print( f.renderText('pyGeoQB') )
-print( "verion 0.0.1 ")
+print( f"verion {version}")

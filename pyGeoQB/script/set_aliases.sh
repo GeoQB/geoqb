@@ -12,5 +12,6 @@ echo "* Aliases for GeoQB commands will be defined for the virtual environment: 
 echo "********************************************************************************************"
 alias gqws="source env/env.sh $envV; python3 examples/gqws.py"
 alias gql="source env/env.sh $envV; python3 examples/gql.py"
+alias gqblend="source env/env.sh $envV; python3 examples/gqblend.py"
 
 alias

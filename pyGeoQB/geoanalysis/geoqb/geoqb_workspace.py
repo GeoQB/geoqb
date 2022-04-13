@@ -36,6 +36,9 @@ def soft_delete():
 
 def get_size():
     start_path = getWorkspaceFolder()
+    return get_size( start_path )
+
+def get_size(start_path):
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(start_path):
         for f in filenames:
