@@ -58,7 +58,7 @@ def getConnection():
 def topolgy_inspection():
 
     path_offset = gqws.prepareWorkspaceFolders()
-    WORKPATH = f"{path_offset}/sample_clusters/"
+    WORKPATH = f"{path_offset}/sample_clusters2/"
 
     ######################################################
     #  Make sure that we have workspace folder ...
@@ -69,9 +69,8 @@ def topolgy_inspection():
     conn, graph_name = getConnection()
 
     import geoanalysis.geoqb.graph_analyser as ga
-    ga.analyseClusters( graph_name, conn, WORKPATH )
 
-    print( f"> Calculated topology information has been stored in {WORKPATH}.")
+    ga.analyseClusters( graph_name, conn, WORKPATH )
 
 
 
@@ -176,7 +175,7 @@ def getLayerNames(path_offset):
     return locs
 
 
-def main( cmd: ("(ls|create|ingest|extract|extract-all|calc-impact-score|ca)"), layer_name='*', verbose=False):
+def main( cmd: ("(ls|create|ingest|extract|extract-all|calc-impact-score|clusters)"), layer_name='*', verbose=False):
 
     print( f"ENV: GEOQB_WORKSPACE: {path_offset}")
     print( f"CMD: {cmd} <verbose:{verbose}>")
@@ -271,7 +270,7 @@ def main( cmd: ("(ls|create|ingest|extract|extract-all|calc-impact-score|ca)"), 
 
         calc_impact_score_for_layer_stack( location_name=location )
 
-    elif cmd=="ca":
+    elif cmd=="clusters":
 
         go = input("> Analyse the full graph ... (node2vec + k-means + word-clouds) " )
 
