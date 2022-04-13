@@ -2,6 +2,7 @@
 
 import sys
 sys.path.append('./')
+import geoanalysis.utils.word_cloud as wordcloud
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -22,6 +23,7 @@ import pandas as pd
 from gensim.models import KeyedVectors
 from gensim.models import Word2Vec
 
+import geoanalysis.utils.clip_board_tool as cbt
 
 from urllib.request import urlopen
 import json
@@ -200,42 +202,13 @@ print(dfLabel)
 
 results = np.array(list(zip(nodeNames,dfLabel)))
 
-
 import pandas as pd
 pd.DataFrame(results).to_csv( f"{WORKPATH}/nodeLabels.tsv" , index=True, sep ='\t' )
 
 
-dfr = pd.DataFrame(results, columns=('v_id','cluster'))
-print( dfr )
+skipPatterns = [ 'ffff', 'https:' ]
+wordcloud.create_word_clouds_from_vIds_per_cluster( skipPatterns=skipPatterns, hideNote=True )
 
-
-
-gr = dfr.groupby("cluster") #.count()
-print( gr )
-
-from wordcloud import WordCloud
-
-for i in range(0,8):
-  group = gr.get_group(str(i))
-
-  text2 = "\n ".join(v_id for v_id in group.v_id)
-  fn = f"{WORKPATH}/cluster_{i}.txt"
-  f = open( fn, "w")
-  f.write( text2 )
-  f.close()
-
-  # Creating word_cloud with text as argument in .generate() method
-
-  word_cloud2 = WordCloud(collocations = True, background_color = 'white').generate(text2)
-
-  # Display the generated Word Cloud
-
-  plt.imshow(word_cloud2, interpolation='bilinear')
-  fn = f"{WORKPATH}/cluster_{i}.png"
-  plt.axis("on")
-  plt.savefig(fn)
-  plt.clf()
-  #plt.show()
 
 #predict the labels of clusters.
 label = kmeans.fit_predict(Z)
@@ -264,6 +237,8 @@ for x in range( 0,5 ):
 
 print(">>> PCA and K-Means culstering analysis done ...")
 print(f">   Results are stored in {WORKPATH} ...")
+cbt.add_to_clipboard(WORKPATH)
+
 
 
 exit()
