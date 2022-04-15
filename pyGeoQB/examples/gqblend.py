@@ -1,4 +1,3 @@
-
 ######################################################################
 #
 # The pyGeoQB CLI wraps around the demo scripts and core functions.
@@ -10,10 +9,42 @@ import click
 import sys
 import os
 sys.path.append('./')
+import pandas as pd
+import flat_table
+
 
 import glob
 import geoanalysis.geoqb.geoqb_workspace as gqws
+import geoanalysis.geoqb.data4good.HighResolutionPopulationDensityMapsAndDemographicEstimates as d4g_population
+import geoanalysis.geoqb.geoqb_tg as gqtg
+import geoanalysis.geoqb.geoqb_kafka as gqkafka
+import geoanalysis.geoqb.geoqb_layers as gql
 import plac
+
+#####################################################
+#  Some variables ...
+#
+TG_SECRET = os.environ.get('TG_SECRET')
+TG_SECRET_ALIAS = os.environ.get('TG_SECRET_ALIAS')
+TG_USERNAME = os.environ.get('TG_USERNAME')
+TG_PASSWORD = os.environ.get('TG_PASSWORD')
+TG_URL = os.environ.get('TG_URL')
+GEOQB_TG_GRAPHNAME = os.environ.get('GEOQB_TG_GRAPHNAME')
+
+import geoanalysis.geoqb.sample_data.sample_layers as sl
+
+def getConnection():
+    #######################################################
+    # Connection to TigerGraph
+    #
+    graph_name = GEOQB_TG_GRAPHNAME
+    conn, token = gqtg.initTG( graph_name=graph_name,
+                               username=TG_USERNAME,
+                               password=TG_PASSWORD,
+                               hostname=TG_URL,
+                               secretalias=TG_SECRET_ALIAS,
+                               secret=TG_SECRET )
+    return conn, graph_name
 
 #####################################################
 #  Extracted data will be stored in this folder.
@@ -27,12 +58,122 @@ from pathlib import Path
 from datetime import datetime
 import json
 
+def validateStructure4GraphMapping( df ):
+    print("!!! WARNING !!! - Validation is not implemented yet. Feature comming soon.")
+    return True
 
 
-def main( cmd: ('(ls|init|clear|blend)'), verbose=False, ):
-    print( f"GeoQB blend - is a tool for data blending using your graph database.\n" )
-    print( f"ENV GEOQB_WORKSPACE: {path_offset}")
+def blendDataFromTopicToLayer( layerName, dataDF ):
 
+    print( "#.")
+
+    conn, graph_name = getConnection()
+
+    dfSPOS, dfedgesNEG = gqtg.getLayer( conn, graph_name, WORKPATH=WORKPATH, overwrite=True,  s1=layerName, s2="POS" )
+    dfSNEG, dfedgesNEG = gqtg.getLayer( conn, graph_name, WORKPATH=WORKPATH, overwrite=True,  s1=layerName, s2="NEG" )
+
+    nodesPOS = dfSPOS.dropna(subset=['lat', 'lon'])
+    nodesNEG = dfSNEG.dropna(subset=['lat', 'lon'])
+
+    allNodesTemp = pd.concat([nodesPOS, nodesNEG], axis=0)
+
+    #
+    # This is the mapping of a particular measurement to an h3place in the graph
+    #
+    v_cnShort = [ "temp" , "p", "dp" ]
+    v_cnLong = [ "TEMPERATURE" , "PRESURE", "delta_PRESURE" ]
+    observation_source = [ "myTempSensor", "myPSensor", "calc" ]
+    observation_typ = [ "environment.temperature.absolute", "environment.air-presure.absolute", "environment.air-presure.change" ]
+
+    mappings = []
+    i=0
+    while i < len(v_cnShort):
+        mapping1 = ( v_cnShort[i], v_cnLong[i], observation_source[i], observation_typ[i] )
+        mappings.append( mapping1 )
+        i = i + 1
+
+    print( f"> # of nodes in layer: {len(allNodesTemp)}" )
+
+    gqtg.blendDataToLayerDataInTigerGraph( allNodesTemp, dataDF, mappings, path_offset, conn )
+
+
+
+def start_blending_data_to_layer( asset="data4good", filters=["_", "POS"] ):
+
+    #print( f"WS : {path_offset}md/*")
+
+    globs = glob.glob(f"{path_offset}md/*")
+    locs = {}
+    for g in globs:
+        p = g[len(path_offset)+3:].split("_")[0]
+        locs[p]=g
+    print( f"> For {len(locs)} location(s) we can do the data blending." )
+    print( f"* {locs.keys()}" )
+
+    selected = ""
+    location = input(f"> select a location ({selected}): " )
+    print( f"* your input: [{location}]" )
+    if location=="":
+        location = selected
+    if location in locs:
+        print( f"> Continue data blending with data asset: {asset}.")
+
+        conn, graph_name = getConnection()
+
+        dfSPOS, dfedgesNEG = gqtg.getLayer( conn, graph_name, WORKPATH=WORKPATH, overwrite=True,  s1=location, s2="POS" )
+        dfSNEG, dfedgesNEG = gqtg.getLayer( conn, graph_name, WORKPATH=WORKPATH, overwrite=True,  s1=location, s2="NEG" )
+
+        nodesPOS = dfSPOS.dropna(subset=['lat', 'lon'])
+        nodesNEG = dfSNEG.dropna(subset=['lat', 'lon'])
+
+        allNodesTemp = pd.concat([nodesPOS, nodesNEG], axis=0)
+
+        if asset=="data4good":
+            ###################################################################################
+            # Using our managed Data4good data asset we can enrich our existing graph layers
+            #
+
+            #
+            # ... enrich all the preloaded data!
+            #
+            d4g_population.enrich( conn, allNodesTemp )
+
+    else:
+        print( f"* The selection {location} is not available in the list of LAYER STACKS: {locs.keys()}")
+        exit()
+
+    pass
+
+def showFilteredAndSelectOne( prefix ):
+
+    topics = gqkafka.getTopicsForPrefix( prefix )
+
+    i=1
+    selected = None
+    for t in topics:
+        print( f"[{i}]    {t}" )
+        i=i+1
+        if selected is None:
+            selected = t
+    if selected is None:
+        selected = ""
+    print( f"\n> {len(topics)} enrichment data topic(s) with prefix <{prefix}> in linked streaming data workspace." )
+    inp = input(f"\n* Please select a topic: ({selected}): " )
+    if not inp=="":
+        selected = inp
+    print( f"* your selection: [{selected}]" )
+    if selected=="":
+        print( f"\n> No topic selected.")
+        exit()
+    else:
+        print( f"\n> Ready to blend data from topic {selected} to the knowledge graph." )
+        return selected
+
+
+
+def main( cmd: ('(ls|topics|init|clear|blend)'), verbose=False, ):
+
+    print( f"\nGeoQB blend - is a tool for data blending for data from local data assets, streaming pods, and public linked data pods.\n" )
 
     if cmd=="ls":
         path = f"{path_offset}stage/*"
@@ -50,6 +191,40 @@ def main( cmd: ('(ls|init|clear|blend)'), verbose=False, ):
 
         print( f"> Data asset path : {path}")
         print( f"> Total capacity  : {s_in_bytes/1024/1024:.2f} MB.")
+
+    elif cmd=="topics":
+        prefix="GQ"
+        print( f"CMD: {cmd} <verbose:{verbose}>\n")
+
+        topic = showFilteredAndSelectOne( prefix )
+
+        df = gqkafka.readAndPrint_N_messages_from_topic(topic, 1)
+
+        layerName = "Aue"
+
+        '''
+        
+        GQ_temperature_stream
+        
+        "891e34d61d3ffff"
+        
+        {
+            "temp": 22.9,
+            "t": 1650014969,
+            "p": 1010.0,
+            "dp" : -10.5
+        }
+
+        '''
+
+        structureValid = validateStructure4GraphMapping( df )
+
+        if structureValid:
+            print(f"> Start blending data from topic <{topic}> to layer <{layerName}> ...")
+            blendDataFromTopicToLayer( layerName, df )
+        else:
+            print(f"> Data from topic {topic} can't be blended." )
+
 
     elif cmd=="init":
         print( f"CMD: {cmd} <verbose:{verbose}>")
@@ -78,6 +253,31 @@ def main( cmd: ('(ls|init|clear|blend)'), verbose=False, ):
         else:
             print( f"*** WARNING *** The data asset <{answer}> does not exist." )
             exit()
+
+    elif cmd=="blend":
+        fn = gqws.getWorkspaceFolder()
+
+        path1 = f"{path_offset}stage/*"
+        print( f"CMD: {cmd} <verbose:{verbose}>\n")
+        globs = glob.glob( path1 )
+        locs = {}
+        i=1
+        for g in globs:
+            p = g[len(path_offset)+6:].split("_")[0]
+            locs[p]=g
+            print( f"[{i}]    {p} - {g}" )
+
+
+        answer = input(f"\n> Which data asset should be blended into a layer ? : [PLEASE PROVIDE foldername]  : " )
+        path = f"{path_offset}stage/{answer}"
+        dassetExist = os.path.exists(path)
+        if dassetExist:
+            print( f"<{answer}> is your selection\n > ... ready to start blending process." )
+            start_blending_data_to_layer(asset=answer)
+        else:
+            print( f"*** WARNING *** The data asset <{answer}> does not exist." )
+            exit()
+
 
     else:
         print( f"CMD {cmd} <verbos:{verbose}> not yet implemented.")

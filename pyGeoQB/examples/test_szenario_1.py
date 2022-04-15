@@ -120,7 +120,7 @@ def loadDataFromWeb(locs, lengths, load_layer_tags = True, load_full_set_of_tags
 
             # multiLayer.persistDataFrames( path_offset )
 
-            # multiLayer.stageLayerDataInTigerGraph( path_offset, conn )
+            multiLayer.stageLayerDataInTigerGraph( path_offset, conn )
 
             # layer.stageLayerDataInKafkaTopic( path_offset = path_offset, topic_name = topic )
 

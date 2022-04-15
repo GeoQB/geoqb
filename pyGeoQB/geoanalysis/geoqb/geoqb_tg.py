@@ -1,3 +1,4 @@
+import flat_table
 import pyTigerGraph as tg
 
 import geoanalysis.geoqb.geoqb_tg_layer_tag_histogram as gqtaghisto
@@ -8,6 +9,8 @@ import geoanalysis.geoqb.geoqb_h3 as gqh3
 import pandas as pd
 
 from string import Template
+from datetime import datetime
+import json
 
 #
 # Create a TigerGraph Application
@@ -231,3 +234,131 @@ def runInstalledQuery( conn, qKey ):
 
 def cleanData( conn, name ):
     print( "> W.I.P. : clean data ...")
+
+
+
+# layer   - is an initialized layer which is available in our workspace.
+# dataDF  - this is the dataframe with the observations to be blended.
+#
+#
+def blendDataToLayerDataInTigerGraph( layer, dataDF,mappings, path_offset, conn, res = 9, dumpFile = True ):
+
+
+    print( layer )
+    print( "##..")
+
+    layer ['latCell'] = layer.apply( lambda x : gqh3.lat_lon_from_h3Index2( x["Id"] )[0], axis = 1 )
+    layer ['lonCell'] = layer.apply( lambda x : gqh3.lat_lon_from_h3Index2( x["Id"] )[1], axis = 1 )
+    print( "###...")
+
+    #FN = "./temp.tsv"  #DS_STAGE_PATH + FILE_NAMES[0]
+    #print( f">>> Read data file: {FN}")
+    #enrichmentData = pd.read_csv( FN, sep=",", compression="zip" )
+
+    enrichmentData = dataDF
+    print( enrichmentData )
+    print( "####....")
+
+    print( f">>> Calc h3index ...")
+    enrichmentData["k"] = enrichmentData.apply( lambda x : x["key"][1:len(x["key"])-1], axis = 1 )
+
+    enrichmentData["t"] = enrichmentData.apply( lambda x : datetime.utcfromtimestamp( json.loads(x["records"])['t'] ).strftime('%Y-%m-%d %H:%M:%S') , axis = 1 )
+
+    enrichmentData["temp"] = enrichmentData.apply( lambda x :  json.loads(x["records"])['temp'] , axis = 1 )
+    enrichmentData["p"] = enrichmentData.apply( lambda x : json.loads(x["records"])['p'] , axis = 1 )
+    enrichmentData["dp"] = enrichmentData.apply( lambda x : json.loads(x["records"])['dp'] , axis = 1 )
+
+    enrichmentData = flat_table.normalize(enrichmentData)
+
+    joined = pd.merge( layer, enrichmentData, left_on='Id', right_on='k' )
+
+    print( f">>> Add Metadata ...")
+    enrichmentData = joined.drop_duplicates(subset='Id', keep="last")
+    enrichmentData["res"] = res
+
+    cols = ["Id","t","Lat","Lon","res"]
+    colMaps = {}
+
+###
+    #    Loop over mappings
+    i = 1
+    for m in mappings:
+        print( m )
+
+        K1 = f"source{i}"
+        K2 = f"factID{i}"
+
+        enrichmentData[K1] = m[2]
+        enrichmentData[K2] = m[3]
+
+        colMaps[ m[0] ] = f"v_cn{i}"
+
+        cols.append( f"v_cn{i}")
+        cols.append( f"source{i}")
+        cols.append( f"factID{i}")
+        i=i+1
+
+    print( colMaps )
+    print( cols )
+    enrichmentData.rename( columns=colMaps, inplace=True)
+
+    # enrichmentData = enrichmentData[cols]
+
+    print( enrichmentData )
+
+    zN1t = 0;
+
+    #if dumpFile :
+    #fn = getDumpFileName( SUFFIX=SUFFIX )
+    fn = "./tempDUMP.tsv"
+    enrichmentData.to_csv( fn , index=True, sep ='\t')
+
+
+    #
+    #  only h3Places are loaded ... we make sure that the h3place-nodes are available in the graph.
+    #
+    zN1 = conn.upsertVertexDataFrame(
+        df=enrichmentData, vertexType='h3place', v_id='Id',
+        attributes={'resolution':'res','lat':'Lat','lon':'Lon' })
+
+    zN1t = zN1t + zN1
+
+########
+
+    zN2t = 0
+    zEt = 0
+
+    i = 1
+    while i <= len(mappings):
+
+        factIDs = f"factID{i}"
+        sourceS = f"source{i}"
+        v_cnS = f"v_cn{i}"
+
+        zN2 = conn.upsertVertexDataFrame(
+            df=enrichmentData, vertexType='fact', v_id=factIDs,
+            attributes={'source':sourceS } )
+        zN2t = zN2t + zN2
+
+        print( "+++***+++")
+
+        print( enrichmentData.columns )
+        zE = conn.upsertEdgeDataFrame(
+            df=enrichmentData,
+            sourceVertexType='h3place',
+            edgeType='observed_at',
+            targetVertexType='fact',
+            from_id='Id',
+            to_id=factIDs,
+            attributes={ 'value':v_cnS, 'time':'t' } )
+
+        print( "---+++***+++---")
+        i = i + 1
+
+        zEt = zEt + zE
+
+
+########
+    print( f"UPLOAD STATS: {zEt} 'observation' edges added to the graph." )
+
+    return
