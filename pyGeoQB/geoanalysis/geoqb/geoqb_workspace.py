@@ -56,16 +56,15 @@ def prepareWorkspaceFolders( verbose=True):
     required_dirs = ["single_layer_images", "multi_layer_images", "graph_layers", "graph_layers/vertexes", "graph_layers/edges", "graph_layers/grid", "raw", "md", "dumps", "stage"]
 
     if verbose:
+        print( f"ENV GEOQB_WORKSPACE: {path_offset}")
         print( f">>> Verify GeoQB-Workspace folder structure: {path_offset}")
 
-    for d in required_dirs:
-        fn = path_offset+d
-        Path(fn).mkdir(parents=True, exist_ok=True)
-        file_exists = exists(fn)
-        if verbose:
-            print( f">   {fn} --> (file_exists= {file_exists})")
-
-    if verbose:
-        print( f">>> DONE.")
+        for d in required_dirs:
+            fn = path_offset+d
+            Path(fn).mkdir(parents=True, exist_ok=True)
+            file_exists = exists(fn)
+            if verbose:
+                print( f"     >   (file_exists= {file_exists}) : {fn} ")
+        print( f">>> Workspace inspection done.")
 
     return path_offset

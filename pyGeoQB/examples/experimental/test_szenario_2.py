@@ -5,7 +5,7 @@
 #  - Data4Good : Population data is linked to h3index cells
 #
 import sys
-sys.path.append('../../../')
+sys.path.append('./')
 
 import os
 import pandas as pd
@@ -47,7 +47,7 @@ print( gqzip.enrichLoactionName( "Frankleben" ) )
 #     https://uber.github.io/h3-py/api_reference.html
 #
 print( "##### 2 #####")
-location_name = "Frankleben"
+location_name = "Aue"
 data = gqh3.getLocationCoordinatesAndH3Index( location_name , 9 )
 print( data )
 

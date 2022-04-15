@@ -227,11 +227,11 @@ def main( cmd: ("(ls|create|rm|ingest|extract|extract-all|calc-impact-score|clus
         print( f"* your input: [{location}]" )
         if location=="":
             location = selected
-        if selected not in locs:
+        if location in locs:
+            print( f"> Continue with {location}.")
+        else:
             print( f"* The selection {location} is not available in the list of LAYER STACKS: {locs.keys()}")
             exit()
-        else:
-            print( f"> Continue with {location}.")
 
         #type = input("> layer type: (Sophox) " )
         #if len(type) == 0:

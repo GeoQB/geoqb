@@ -1,6 +1,15 @@
-from confluent_kafka import Producer, KafkaError
+from confluent_kafka import Producer, Consumer, KafkaException
 import json
 import os
+import pandas as pd
+import sys
+import flat_table
+
+
+import argparse
+
+from confluent_kafka import avro, KafkaError
+from confluent_kafka.admin import AdminClient, NewTopic
 
 # Kafka
 bootstrap_servers=os.environ.get('bootstrap_servers')
@@ -23,6 +32,10 @@ producer = Producer({
         'sasl.password': sasl_password
 })
 
+# Create Producer instance
+consumer = None
+
+
 #
 # This function exports the OSM nodes data into a Kafka topic.
 #
@@ -32,3 +45,130 @@ def publishToTopic(row, topic):
   producer.produce(topic, key=str(row['id']), value=json_vdata )
   producer.flush()
 
+
+
+def getTopicsForPrefix( prefix ):
+
+    """
+     Create a topic if needed
+     Examples of additional admin API functionality:
+     https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/adminapi.py
+     """
+
+    a = AdminClient({
+        'bootstrap.servers': bootstrap_servers,
+        'sasl.mechanisms': 'PLAIN',
+        'security.protocol': 'SASL_SSL',
+        'sasl.username': sasl_username,
+        'sasl.password': sasl_password
+    })
+
+    t=[]
+
+    clusterMD = a.list_topics()
+    #print( len(clusterMD.topics))
+    for topic in clusterMD.topics:
+        try:
+            #print("{}".format(topic))
+            if topic.startswith( prefix ):
+                t.append( topic )
+
+        except Exception as e:
+            # Continue if error code TOPIC_ALREADY_EXISTS, which may be true
+            # Otherwise fail fast
+            if e.args[0].code() != KafkaError.TOPIC_ALREADY_EXISTS:
+                print("Failed to list topic {}: {}".format(topic, e))
+
+    return t
+
+
+
+
+def readAndPrint_N_messages_from_topic( topic, N ):
+
+    topics = [ topic ]
+
+    consumer = Consumer( {
+        'bootstrap.servers': bootstrap_servers,
+        'sasl.mechanisms': sasl_mechanisms,
+        'security.protocol': security_protocol,
+        'sasl.username': sasl_username,
+        'sasl.password': sasl_password,
+        'client.id':'geoqb_blender_tool',
+        'group.id':'geoqb_blender_tool_cg_01',
+        'enable.auto.commit': False,
+        'auto.offset.reset': 'earliest'
+    })
+
+    consumer.subscribe( topics )
+
+    data = []
+
+    i = 0
+    running = True
+    while running:
+
+        msg = consumer.poll(timeout=1.0)
+
+        if msg is None: continue
+
+        if msg.error():
+            if msg.error().code() == KafkaError._PARTITION_EOF:
+                # End of partition event
+                sys.stderr.write('%% %s [%d] reached end at offset %d\n' %
+                                 (msg.topic(), msg.partition(), msg.offset()))
+            elif msg.error():
+                raise KafkaException(msg.error())
+        else:
+            data.append(msg)
+            i=i+1
+            if i == 3:
+                running = False
+
+    consumer.close()
+
+    print(f"> {len(data)} messages loaded." )
+
+    msg_key = data[0].key()
+    msg_str = data[0].value()
+    msg_h = data[0].headers()
+
+
+    jsonDataK = msg_key.decode('UTF-8')
+    jsonDataV = msg_str.decode('UTF-8')
+
+    if msg_h is None:
+        jsonDataH = "<no headers>"
+    else:
+        jsonDataH = msg_h
+
+    print( "* KEY     : " + jsonDataK )
+    print( "* HEADERS : " + jsonDataH )
+    print( "* VALUE   : " + jsonDataV )
+    print()
+
+
+    rec = []
+
+    for m in data:
+        msg_key = m.key().decode('UTF-8')
+        msg_val = m.value().decode('UTF-8')
+        msg_h = m.headers()
+        jsonDataH = None
+
+        if msg_h is None:
+            jsonDataH = "<no headers>"
+        else:
+            jsonDataH = msg_h
+
+        m = ( msg_key, jsonDataH, msg_val )
+        rec.append( m )
+        # print( m )
+
+    df1 = pd.DataFrame(rec, columns=['key', 'header', 'records'])
+
+    df2 = flat_table.normalize(df1, expand_dicts=True, expand_lists=True)
+
+    print( df2 )
+
+    return df2
