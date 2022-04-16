@@ -127,12 +127,11 @@ def readAndPrint_N_messages_from_topic( topic, N ):
 
     consumer.close()
 
-    print(f"> {len(data)} messages loaded." )
+    print(f"> {len(data)} messages loaded from topic {topic}." )
 
     msg_key = data[0].key()
     msg_str = data[0].value()
     msg_h = data[0].headers()
-
 
     jsonDataK = msg_key.decode('UTF-8')
     jsonDataV = msg_str.decode('UTF-8')
@@ -169,6 +168,36 @@ def readAndPrint_N_messages_from_topic( topic, N ):
 
     df2 = flat_table.normalize(df1, expand_dicts=True, expand_lists=True)
 
-    print( df2 )
+    # print( df2 )
 
     return df2
+
+
+
+
+
+
+def showTopics_FilteredAndSelectOne( prefix ):
+
+    topics = getTopicsForPrefix( prefix )
+
+    i=1
+    selected = None
+    for t in topics:
+        print( f"[{i}]    {t}" )
+        i=i+1
+        if selected is None:
+            selected = t
+    if selected is None:
+        selected = ""
+    print( f"\n> {len(topics)} enrichment data topic(s) with prefix <{prefix}> in linked streaming data workspace." )
+    inp = input(f"\n* Please select a topic: ({selected}): " )
+    if not inp=="":
+        selected = inp
+    print( f"* your selection: [{selected}]" )
+    if selected=="":
+        print( f"\n> No topic selected.")
+        exit()
+    else:
+        print( f"\n> Ready to blend data from topic {selected} to the knowledge graph." )
+        return selected

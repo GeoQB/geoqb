@@ -92,12 +92,12 @@ def getTagLayerForParaForOSMGraph( conn, graph_name, res = 9 , WORKPATH="./temp/
 
     #print( t )
 
-    print( "*******")
+#    print( "*******")
 
     f2 = open( path_to_buffer_file, "r")
-    data = json.load(f2)
+#    data = json.load(f2)
 
-    print( "###############")
+#    print( "###############")
     dfS = pd.DataFrame(data[0]["nodes1"])
     dfS = flat_table.normalize(dfS)
     expected_type = "h3place"
@@ -112,11 +112,11 @@ def getTagLayerForParaForOSMGraph( conn, graph_name, res = 9 , WORKPATH="./temp/
     dfS.to_csv(path_to_nodelist_file, index=False, sep ='\t')
 
     #print( dfnetwork )
-    print( "### NETWORK ###")
-    print( "###############")
+ #   print( "### NETWORK ###")
+  #  print( "###############")
 
 
-    print( "\n###############")
+   # print( "\n###############")
 
     dfedges = pd.DataFrame(data[1]["@@edgeset"])
 
@@ -127,8 +127,8 @@ def getTagLayerForParaForOSMGraph( conn, graph_name, res = 9 , WORKPATH="./temp/
 
     dfedges = flat_table.normalize(dfedges)
     dfedges.to_csv(path_to_edgelist_file, index=False, sep ='\t')
-    print( "###  EDGES  ###")
-    print( "###############")
+    #print( "###  EDGES  ###")
+    #print( "###############")
 
     return dfS, dfedges
 

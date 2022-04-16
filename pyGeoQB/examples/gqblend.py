@@ -19,6 +19,7 @@ import geoanalysis.geoqb.data4good.HighResolutionPopulationDensityMapsAndDemogra
 import geoanalysis.geoqb.geoqb_tg as gqtg
 import geoanalysis.geoqb.geoqb_kafka as gqkafka
 import geoanalysis.geoqb.geoqb_layers as gql
+import geoanalysis.geoqb.cli.cli_helper as cli
 import plac
 
 #####################################################
@@ -127,8 +128,10 @@ def start_blending_data_to_layer( asset="data4good", filters=["_", "POS"] ):
         nodesNEG = dfSNEG.dropna(subset=['lat', 'lon'])
 
         allNodesTemp = pd.concat([nodesPOS, nodesNEG], axis=0)
+        print("> Layer data loaded from graph.")
 
         if asset=="data4good":
+            print( "> Work with asset <data4good>.")
             ###################################################################################
             # Using our managed Data4good data asset we can enrich our existing graph layers
             #
@@ -144,34 +147,15 @@ def start_blending_data_to_layer( asset="data4good", filters=["_", "POS"] ):
 
     pass
 
-def showFilteredAndSelectOne( prefix ):
-
-    topics = gqkafka.getTopicsForPrefix( prefix )
-
-    i=1
-    selected = None
-    for t in topics:
-        print( f"[{i}]    {t}" )
-        i=i+1
-        if selected is None:
-            selected = t
-    if selected is None:
-        selected = ""
-    print( f"\n> {len(topics)} enrichment data topic(s) with prefix <{prefix}> in linked streaming data workspace." )
-    inp = input(f"\n* Please select a topic: ({selected}): " )
-    if not inp=="":
-        selected = inp
-    print( f"* your selection: [{selected}]" )
-    if selected=="":
-        print( f"\n> No topic selected.")
-        exit()
-    else:
-        print( f"\n> Ready to blend data from topic {selected} to the knowledge graph." )
-        return selected
 
 
 
-def main( cmd: ('(ls|topics|init|clear|blend)'), verbose=False, ):
+
+
+
+
+
+def main( cmd: ('(ls|assets|topics|init|clear)'), verbose=False, ):
 
     print( f"\nGeoQB blend - is a tool for data blending for data from local data assets, streaming pods, and public linked data pods.\n" )
 
@@ -185,6 +169,7 @@ def main( cmd: ('(ls|topics|init|clear|blend)'), verbose=False, ):
             p = g[len(path_offset)+6:].split("_")[0]
             locs[p]=g
             print( f"[{i}]    {p} - {g}" )
+            i = i + 1
 
         print( f"\n> {len(globs)} enrichment data assets in multi-layer-graph workspace." )
         s_in_bytes = gqws.get_size(path)
@@ -193,14 +178,15 @@ def main( cmd: ('(ls|topics|init|clear|blend)'), verbose=False, ):
         print( f"> Total capacity  : {s_in_bytes/1024/1024:.2f} MB.")
 
     elif cmd=="topics":
-        prefix="GQ"
         print( f"CMD: {cmd} <verbose:{verbose}>\n")
 
-        topic = showFilteredAndSelectOne( prefix )
+        prefix="GQ"
+
+        topic =gqkafka.showTopics_FilteredAndSelectOne( prefix )
 
         df = gqkafka.readAndPrint_N_messages_from_topic(topic, 1)
 
-        layerName = "Aue"
+        layerName = cli.selectLayer()
 
         '''
         
@@ -225,10 +211,9 @@ def main( cmd: ('(ls|topics|init|clear|blend)'), verbose=False, ):
         else:
             print(f"> Data from topic {topic} can't be blended." )
 
-
     elif cmd=="init":
         print( f"CMD: {cmd} <verbose:{verbose}>")
-        print( "Initialize a new data asset. (Feature comming soon!)")
+        print( "Initialize a new data asset. ( This feature is comming soon!)")
 
     elif cmd=="clear":
         fn = gqws.getWorkspaceFolder()
@@ -244,40 +229,18 @@ def main( cmd: ('(ls|topics|init|clear|blend)'), verbose=False, ):
             locs[p]=g
             print( f"[{i}]    {p} - {g}" )
 
-
         answer = input(f"\n> Which data asset should be removed: : [PLEASE PROVIDE foldername]  : " )
         path = f"{path_offset}stage/{answer}"
-        dassetExist = os.path.exists(path)
+        dassetExist = os.path.exists(path) and len(answer) > 1
         if dassetExist:
             print( f"<{answer}> is your selection\n > ... ready to remove the dataset." )
         else:
             print( f"*** WARNING *** The data asset <{answer}> does not exist." )
             exit()
 
-    elif cmd=="blend":
-        fn = gqws.getWorkspaceFolder()
-
-        path1 = f"{path_offset}stage/*"
-        print( f"CMD: {cmd} <verbose:{verbose}>\n")
-        globs = glob.glob( path1 )
-        locs = {}
-        i=1
-        for g in globs:
-            p = g[len(path_offset)+6:].split("_")[0]
-            locs[p]=g
-            print( f"[{i}]    {p} - {g}" )
-
-
-        answer = input(f"\n> Which data asset should be blended into a layer ? : [PLEASE PROVIDE foldername]  : " )
-        path = f"{path_offset}stage/{answer}"
-        dassetExist = os.path.exists(path)
-        if dassetExist:
-            print( f"<{answer}> is your selection\n > ... ready to start blending process." )
-            start_blending_data_to_layer(asset=answer)
-        else:
-            print( f"*** WARNING *** The data asset <{answer}> does not exist." )
-            exit()
-
+    elif cmd=="assets":
+        asset = cli.selectAsset(cmd=cmd,verbose=verbose)
+        start_blending_data_to_layer(asset=asset)
 
     else:
         print( f"CMD {cmd} <verbos:{verbose}> not yet implemented.")
