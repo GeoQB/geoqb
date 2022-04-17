@@ -25,7 +25,7 @@ def reloadOrDumpNamedQueryAsJSON( query, nq, title, path_offset, fnRawOSMRespons
             with open(fileName) as json_file:
                 data = "---DATA---" #json.load(json_file)
 
-            print( data )
+            # print( data )
             return data, fileName
 
 

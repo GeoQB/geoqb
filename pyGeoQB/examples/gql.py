@@ -100,7 +100,7 @@ def calc_impact_score_for_layer_stack( location_name ):
 def export_layer_stack(location_name, type="sophox", graph_name="OSMLayers_Demo6a", zoom=9, dryRun=False):
 
     path_offset = gqws.prepareWorkspaceFolders()
-    WORKPATH = f"{path_offset}/sample_extract/"
+    WORKPATH = f"{path_offset}/extract-stage/"
 
     ######################################################
     #  Make sure that we have workspace folder ...
@@ -116,10 +116,10 @@ def export_layer_stack(location_name, type="sophox", graph_name="OSMLayers_Demo6
     print( f"> Exported graph data is stored in {WORKPATH}.")
 
 
-def export_all_layer_stack(location_name, type="sophox", graph_name="OSMLayers_Demo6a", zoom=9, dryRun=False):
+def export_all_layer_stack( type="sophox", graph_name="OSMLayers_Demo6a", zoom=9, dryRun=False):
 
     path_offset = gqws.prepareWorkspaceFolders()
-    WORKPATH = f"{path_offset}/sample_extract/"
+    WORKPATH = f"{path_offset}/extract-full-graph/"
 
     ######################################################
     #  Make sure that we have workspace folder ...
@@ -129,7 +129,11 @@ def export_all_layer_stack(location_name, type="sophox", graph_name="OSMLayers_D
 
     conn, graph_name = getConnection()
 
-    print( f"> Exported graph data is stored in {WORKPATH}.")
+
+    print("!!! Full graph export is not yet implemented. !!! - Feature is comming soon. ")
+
+
+    print( f"> Exported graph data will be stored in {WORKPATH}.\n")
 
 
 def ingest_layer_stack(location_name, type="sophox", zoom=9, dryRun=False):
@@ -192,7 +196,22 @@ def main( cmd: ("(ls|create|rm|ingest|extract|extract-all|calc-impact-score|clus
             locs[p]=g
         print( f"\n> {len(globs)} individual layers in multi-layer-graph workspace." )
         print( f"> {len(locs)} locations:" )
-        print( f"* {locs.keys()}" )
+
+        s_in_bytes = gqws.get_size(path_offset)
+        print( f"> Total capacity: {s_in_bytes/1024/1024/1024:.2f} GB.")
+
+        i = 0
+        sep = ""
+        layerNames = ""
+        for dk in locs.keys():
+            layerNames = layerNames + sep + dk
+            i = i + 1
+            if i > 0:
+                sep = ", "
+        if ( i > 0 ):
+            print( f"\n* [{layerNames}]" )
+        print()
+
 
     elif cmd=="create":
         selected = ""
@@ -204,14 +223,13 @@ def main( cmd: ("(ls|create|rm|ingest|extract|extract-all|calc-impact-score|clus
         print( f"* your input: [{location}]" )
         if location=="":
             location = selected
-        if selected not in locs:
-            print( f"* The selection {location} is not available in the list of LAYER STACKS: {locs.keys()}")
-            exit()
+        #if selected in locs:
+        #    print( f"* The selection {location} is not available in the list of LAYER STACKS: {locs.keys()}")
+        #    exit()
         else:
             print( f"> Continue with {location}.")
 
-
-        type = input("> layer type: (Sophox) " )
+        type = input("> Select layer type: (Sophox) " )
         if len(type) == 0:
             type = "sophox"
         print(f"[{type}]")
@@ -241,8 +259,21 @@ def main( cmd: ("(ls|create|rm|ingest|extract|extract-all|calc-impact-score|clus
         ingest_layer_stack( location_name=location, type=type )
 
     elif cmd=="extract":
-        location = input("> location: " )
-        print( f"[{location}]" )
+        selected = ""
+        if ( len(layer_name) > 1 ):
+            selected = layer_name
+        locs = getLayerNames(path_offset)
+        print( f"> {len(locs)} locations: {locs.keys()}" )
+        location = input(f"> select location ({selected}): " )
+        print( f"* your input: [{location}]" )
+        if location=="":
+            location = selected
+        if location in locs:
+            print( f"> Continue with {location}.")
+        else:
+            print( f"* The selection {location} is not available in the list of LAYER STACKS: {locs.keys()}")
+            exit()
+
         #type = input("> layer type: (Sophox) " )
         #if len(type) == 0:
         type = "sophox"
@@ -251,20 +282,26 @@ def main( cmd: ("(ls|create|rm|ingest|extract|extract-all|calc-impact-score|clus
         export_layer_stack( location_name=location, type=type )
 
     elif cmd=="extract-all":
-        location = input("> location: " )
-        print( f"[{location}]" )
-        #type = input("> layer type: (Sophox) " )
-        #if len(type) == 0:
         type = "sophox"
-        #print(f"[{type}]")
-
-        export_all_layer_stack( location_name=location, type=type )
+        export_all_layer_stack( type=type )
 
     elif cmd=="calc-impact-score":
-        location = input("> location: " )
-        print( f"[{location}]" )
-        #type = input("> layer type: (Sophox) " )
-        #if len(type) == 0:
+
+        selected = ""
+        if ( len(layer_name) > 1 ):
+            selected = layer_name
+        locs = getLayerNames(path_offset)
+        print( f"> {len(locs)} locations: {locs.keys()}" )
+        location = input(f"> select location ({selected}): " )
+        print( f"* your input: [{location}]" )
+        if location=="":
+            location = selected
+        if location in locs:
+            print( f"> Continue with {location}.")
+        else:
+            print( f"* The selection {location} is not available in the list of LAYER STACKS: {locs.keys()}")
+            exit()
+
         type = "sophox"
         #print(f"[{type}]")
 

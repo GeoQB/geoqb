@@ -155,7 +155,7 @@ def start_blending_data_to_layer( asset="data4good", filters=["_", "POS"] ):
 
 
 
-def main( cmd: ('(ls|assets|topics|init|clear)'), verbose=False, ):
+def main( cmd: ('(ls|asset|topic|init|clear)'), verbose=False, ):
 
     print( f"\nGeoQB blend - is a tool for data blending for data from local data assets, streaming pods, and public linked data pods.\n" )
 
@@ -177,7 +177,7 @@ def main( cmd: ('(ls|assets|topics|init|clear)'), verbose=False, ):
         print( f"> Data asset path : {path}")
         print( f"> Total capacity  : {s_in_bytes/1024/1024:.2f} MB.")
 
-    elif cmd=="topics":
+    elif cmd=="topic":
         print( f"CMD: {cmd} <verbose:{verbose}>\n")
 
         prefix="GQ"
@@ -238,7 +238,7 @@ def main( cmd: ('(ls|assets|topics|init|clear)'), verbose=False, ):
             print( f"*** WARNING *** The data asset <{answer}> does not exist." )
             exit()
 
-    elif cmd=="assets":
+    elif cmd=="asset":
         asset = cli.selectAsset(cmd=cmd,verbose=verbose)
         start_blending_data_to_layer(asset=asset)
 

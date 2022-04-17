@@ -54,11 +54,23 @@ def calcAverageDistanceForAllPoints2( df1, df2 ):
 
 
 
+
 def calc_score( location_name, conn, WORKPATH, run, graph_name ):
 
-    file = gqws.getFileHandle( path="impact-score-dev", fn=f"impact-score-0{run}.tsv", mode="a" ) ### MAKE an automatic counter for placehoder x
+    fn1 = f"impact-score-0{run}.tsv"
 
-    file.write("DURATION\tLOC\tzPOS\tzNEG\tzALl\tposM\tposM/allMAX\tmath.sqrt(posZ)\tposMAX\tallM\tallM/allMAX\tmath.sqrt(allZ)\tallMAX\tnegM\tnegM/allMAX\tmath.sqrt(negZ)\tnegMAX\n")
+    file = gqws.getFileHandle( path="sample_score/", fn=fn1, mode="a" ) ### MAKE an automatic counter for placehoder x
+
+    try:
+        size = os.path.getsize( file.name )
+        print( f"> FILE SIZE: {size}")
+        if size < 1:
+            file.write("DURATION\tLOC\tzPOS\tzNEG\tzALl\tposM\tposM/allMAX\tmath.sqrt(posZ)\tposMAX\tallM\tallM/allMAX\tmath.sqrt(allZ)\tallMAX\tnegM\tnegM/allMAX\tmath.sqrt(negZ)\tnegMAX\n")
+            print( f"> Define table header ... <{file.name}>" )
+        else:
+            print( f"> Table is ready for appending data ... <{file.name}>" )
+    except:
+        pass
 
     from datetime import datetime
 

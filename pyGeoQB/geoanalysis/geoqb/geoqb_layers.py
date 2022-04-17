@@ -39,11 +39,11 @@ def calculateBoundingBox( center, l ):
   #
   bb  = '(' + tl + ', ' + br + ');'
 
-  print( "center_lat=" + str(center[0]) )
-  print( "center_lon=" + str(center[1]) )
-  print( "bb_w=" + str(w) )
-  print( "bb_h=" + str(h) )
-  print( "bounding box: " + bb  )
+  #print( "center_lat=" + str(center[0]) )
+  #print( "center_lon=" + str(center[1]) )
+  #print( "bb_w=" + str(w) )
+  #print( "bb_h=" + str(h) )
+  #print( "bounding box: " + bb  )
 
   return bb
 
@@ -382,13 +382,13 @@ class LayerSpecification:
             q  = None
             r = None
 
-            print(self.location_name)
+            # print(self.location_name)
 
             if  self.location_name.startswith("Point(") :
-                print("##**##**##**")
+                #print("##**##**##**")
                 lat, lon, self.myBBCenter_h3index, q, r = gqh3.getLocationCoordinatesAndH3IndexFromPoint( self.location_name, self.zoom )
             else:
-                print("##**____##**")
+                #print("##**____##**")
                 lat, lon, self.myBBCenter_h3index, q, r = gqh3.getLocationCoordinatesAndH3Index( self.location_name, self.zoom )
 
             self.center = (lat,lon)
@@ -442,15 +442,15 @@ class LayerSpecification:
 
     def persistDataFrames(self, path_offset):
 
-        print( "*#-> 0")
+        #print( "*#-> 0")
         self.links, self.tag_counts = gqh3.getLinks_and_Counters( coords_WithTags = self.coords, resolution=self.zoom )
         #print(self.links )
         #print(self.tag_counts )
 
-        print( "*#-> 1 - START")
-        print( path_offset )
+        print( "> 1 - START")
+        #print( path_offset )
         h3places_nodes = gqosm.nodes_to_DF( self.coords , self.fnPlaces, path_offset, resolution=self.zoom )
-        print( "*#-> 1 - END")
+        print( "> 1 - END")
 
 
         #
@@ -480,11 +480,11 @@ class LayerSpecification:
         #thirdLevelNodes.to_csv( path_offset + self.fnGrid + "_3_NODES.csv", index=False)
 
 
-        print( "*#-> 2 - START")
+        print( "> 2 - START")
 
         gqosm.links_to_DF( self.links, self.fnLinks, path_offset, layer_id=self.qn )
 
-        print( "*#-> 2 - END")
+        print( "> 2 - END")
 
         #print( "*#-> 3")
 
@@ -681,7 +681,7 @@ class SophoxLayer(LayerSpecification):
         self.setFolderNames()
 
     def getJSONData(self, path_offset, forceReload=True, dryRun = False ):
-        print("#*#*#")
+        # print("#*#*#")
         return gqsophox.reloadOrDumpNamedQueryAsJSON( self.query, self.qn, self.title, path_offset, self.fnRawSophoxResponse, forceReload, dryRun = dryRun)
 
     def plotLayerData(self, path_offset, dryRun = False ):
@@ -716,9 +716,9 @@ class SophoxLayer(LayerSpecification):
         f = open( fn )
         data = json.load( f )
 
-        print( ">>> DATA: <<<"  )
-        print( len(data) )
-        print( "###***^^^")
+        # print( ">>> DATA: <<<"  )
+        # print( len(data) )
+        # print( "###***^^^")
 
         if verbose:
             print( data )

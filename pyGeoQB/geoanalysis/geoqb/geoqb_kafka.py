@@ -173,7 +173,13 @@ def readAndPrint_N_messages_from_topic( topic, N ):
     return df2
 
 
+def describeCluster():
+    print("\n>>> Apache Kafka Cluster is configured for streaming data assets." )
 
+    print( f" > bootstrap.servers : {bootstrap_servers} ")
+    print( f" > sasl.mechanisms   : {sasl_mechanisms} ")
+    print( f" > security.protocol : {security_protocol} ")
+    print( f" > sasl.username     : {sasl_username} ")
 
 
 

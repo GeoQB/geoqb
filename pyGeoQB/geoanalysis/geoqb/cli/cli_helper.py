@@ -30,6 +30,7 @@ def selectAsset( cmd, verbose ):
         locs[p]=g
         print( f"[{i}]    {p} - {g}" )
         selected = p
+        i = i + 1
 
     answer = input(f"\n> Which data asset should be blended into a layer ? [{selected}] : " )
     if answer=="":
