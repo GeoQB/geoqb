@@ -174,6 +174,16 @@ def put_custom_profile_into_pod( profile_name, values):
 
 
 
+def describeSolidDatapod():
+    SOLID_IDP = os.environ.get('SOLID_IDP')
+    SOLID_POD_ENDPOINT = os.environ.get('SOLID_POD_ENDPOINT')
+
+    print("\n>>> SOLID Datapod is configured for public data profiles." )
+    print( f" > solid.idp           : {SOLID_IDP} ")
+    print( f" > solid.pod.endpoint  : {SOLID_POD_ENDPOINT} ")
+
+
+
 def get_custom_profile_from_pod( profile_name ):
 
     SOLID_USERNAME = os.environ.get('SOLID_USERNAME')

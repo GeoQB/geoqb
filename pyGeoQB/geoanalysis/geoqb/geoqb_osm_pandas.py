@@ -338,8 +338,8 @@ def dumpPOIsIntoXMLandKafka(location_name, l, ts, run_id, zoom, topicQMD, path_o
 
 def links_to_DF( links, fn, path_offset, layer_id ):
 
-  print( type(links) )
-  print( len(links))
+  #print( type(links) )
+  #print( len(links))
 
   links2=[]
 

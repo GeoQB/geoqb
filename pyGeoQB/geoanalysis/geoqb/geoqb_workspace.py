@@ -10,9 +10,10 @@ import os
 import shutil
 from pathlib import Path
 
+
 def getFileHandle( path="", fn="f1.dat", mode="w" ):
     WORKPATH = os.environ.get('GEOQB_WORKSPACE')
-    file = open( WORKPATH + path + fn, mode)
+    file = open( WORKPATH + "/" + path + fn, mode)
     return file
 
 def getWorkspaceFolderTRASH():
@@ -64,7 +65,30 @@ def prepareWorkspaceFolders( verbose=True):
             Path(fn).mkdir(parents=True, exist_ok=True)
             file_exists = exists(fn)
             if verbose:
-                print( f"     >   (file_exists= {file_exists}) : {fn} ")
-        print( f">>> Workspace inspection done.")
+                print( f"         (exists:={file_exists}) : {fn} ")
+        print( f">   Workspace inspection done.")
 
     return path_offset
+
+
+def describeWorkspace( verbose=True ):
+
+    path_offset = os.environ.get('GEOQB_WORKSPACE')
+
+    required_dirs = ["single_layer_images", "multi_layer_images", "graph_layers", "graph_layers/vertexes", "graph_layers/edges", "graph_layers/grid", "raw", "md", "dumps", "stage"]
+    print( f"\n>>> GeoQB-Workspace folder structure: {path_offset}")
+
+    status = True
+
+    for d in required_dirs:
+        fn = path_offset+d
+        Path(fn).mkdir(parents=True, exist_ok=True)
+        file_exists = exists(fn)
+        status = status and file_exists
+        if verbose:
+            print( f" > (exists:={file_exists}) : {fn} ")
+    print( f" > Workspace status: READ TO USE := {status}.")
+
+
+
+

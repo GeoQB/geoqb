@@ -82,9 +82,6 @@ def getTagLayerForParaForOSMGraph( conn, graph_name, res = 9 , WORKPATH="./temp/
         print( type(preInstalledResult) )
         print( len(preInstalledResult) )
 
-
-
-
         f = open( path_to_buffer_file, "w")
         f.write( json.dumps( preInstalledResult ) )
         f.flush()
@@ -95,7 +92,7 @@ def getTagLayerForParaForOSMGraph( conn, graph_name, res = 9 , WORKPATH="./temp/
 #    print( "*******")
 
     f2 = open( path_to_buffer_file, "r")
-#    data = json.load(f2)
+    data = json.load(f2)
 
 #    print( "###############")
     dfS = pd.DataFrame(data[0]["nodes1"])

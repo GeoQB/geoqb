@@ -11,6 +11,8 @@ sys.path.append('./')
 
 import glob
 import geoanalysis.geoqb.geoqb_workspace as gqws
+import geoanalysis.geoqb.geoqb_kafka as gqkafka
+import geoanalysis.geoqb.geoqb_profiles as gqprofile
 import plac
 
 #####################################################
@@ -27,11 +29,14 @@ import json
 
 
 
-def main( cmd: ('(ls|init|clear)'), folder: ('(md|raw|stage)','option',"f" ), verbose=False, ):
+def main( cmd: ('(ls|init|describe|clear)'), folder: ('(md|raw|stage)','option',"f" ), verbose=False, ):
 
     print( f"ENV GEOQB_WORKSPACE: {path_offset}")
-    if cmd=="ls":
 
+    if folder is None:
+        folder = "md"
+
+    if cmd=="ls":
         if folder=="md":
 
             print( f"CMD: {cmd} <verbose:{verbose}>")
@@ -44,13 +49,32 @@ def main( cmd: ('(ls|init|clear)'), folder: ('(md|raw|stage)','option',"f" ), ve
                 locs[p]=g
             print( f"\n> {len(globs)} individual layers in multi-layer-graph workspace." )
             print( f"> {len(locs)} locations." )
-            print( f"> {locs.keys()}" )
             s_in_bytes = gqws.get_size(path_offset)
             print( f"> Total capacity: {s_in_bytes/1024/1024/1024:.2f} GB.")
+
+            i = 0
+            sep = ""
+            layerNames = ""
+            for dk in locs.keys():
+                layerNames = layerNames + sep + dk
+                i = i + 1
+                if i > 0 :
+                    sep = ", "
+
+            if ( i > 0 ):
+                print( f"\n* [{layerNames}]" )
+            print()
 
     elif cmd=="init":
         print( f"CMD: {cmd} <verbose:{verbose}>")
         gqws.prepareWorkspaceFolders( verbose=True )
+        print()
+
+    elif cmd=="describe":
+        gqws.describeWorkspace( verbose=True )
+        gqkafka.describeCluster()
+        gqprofile.describeSolidDatapod()
+        print()
 
     elif cmd=="clear":
         fn = gqws.getWorkspaceFolder()
@@ -59,12 +83,13 @@ def main( cmd: ('(ls|init|clear)'), folder: ('(md|raw|stage)','option',"f" ), ve
             print( f"> Your data is still available in {fn}.")
             exit()
         else:
-            s_in_bytes = gqws.get_size()
+            s_in_bytes = gqws.get_size(fn)
             print( f"> Ready to delete ... {s_in_bytes/1024/1024} MB.")
             gqws.soft_delete()
 
         fn = gqws.getWorkspaceFolder()
         gqws.prepareWorkspaceFolders( verbose=False )
+        print()
 
     else:
         print( f"CMD {cmd} <verbos:{verbose}> not yet implemented.")
