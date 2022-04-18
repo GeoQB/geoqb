@@ -5,9 +5,9 @@
 
 import sys
 sys.path.append('./')
-
+import os
 import pandas as pd
-
+import geoanalysis.utils.asset_loader as asl
 import geoanalysis.geoqb.geoqb_workspace as gqws
 import geoanalysis.geoqb.geoqb_h3 as gqh3
 
@@ -18,7 +18,7 @@ import geoanalysis.geoqb.geoqb_h3 as gqh3
 INFO_URL="https://data.humdata.org/dataset/germany-high-resolution-population-density-maps-demographic-estimates"
 
 DOWNLOAD_URLS={
-    "population_deu.csv.zip" : "https://data.humdata.org/dataset/7d08e2b0-b43b-43fd-a6a6-a308f222cdb2/resource/77a44470-f80a-44be-9bb2-3e904dbbe9b1/download/population_deu_2019-07-01.csv.zip",
+    "population_deu_2019-07-01.csv.zip" : "https://data.humdata.org/dataset/7d08e2b0-b43b-43fd-a6a6-a308f222cdb2/resource/77a44470-f80a-44be-9bb2-3e904dbbe9b1/download/population_deu_2019-07-01.csv.zip",
 }
 
 FILE_NAMES=["population_deu_2019-07-01.csv.zip"]
@@ -32,7 +32,8 @@ FILE_NAMES=["population_deu_2019-07-01.csv.zip"]
 # Local context ....
 #
 WORKPATH=gqws.prepareWorkspaceFolders()
-DS_STAGE_PATH=WORKPATH+"/stage/data4good/"
+DS_STAGE_PATH="/stage/data4good/"
+FULL_DS_STAGE_PATH=WORKPATH+DS_STAGE_PATH
 
 
 def getDumpFileName( SUFFIX="" ):
@@ -105,3 +106,65 @@ def enrich( conn, df ):
     blendIntoMultilayerGraph( conn, df )
 
 
+def clean():
+    i = 0
+
+    for k in DOWNLOAD_URLS:
+        print(f"{i} {k}" )
+        localFile = gqws.getFileHandle( DS_STAGE_PATH, k, 'wb' )
+        os.remove( localFile.name )
+        print(f"> Deleted the staged file {localFile.name}")
+
+
+def get_size():
+    start_path = FULL_DS_STAGE_PATH
+    return get_size( start_path )
+
+
+def get_size(start_path):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            # skip if it is symbolic link
+            if not os.path.islink(fp):
+                total_size += os.path.getsize(fp)
+
+    return total_size # in bytes
+
+
+
+def init():
+
+    i = 1
+
+    for k in DOWNLOAD_URLS:
+        print(f"({i}) => {k}" )
+        localFile = gqws.getFileHandle( path=DS_STAGE_PATH, fn=k, mode='wb' )
+        fn = localFile.name
+        localFile.close()
+
+        myUrl = DOWNLOAD_URLS[k]
+        print( myUrl )
+        print(f"> Start loading a data asset into stage: {DS_STAGE_PATH}")
+        #asl.DownloadFile( myUrl, localFile )
+        #asl.download_v2( myUrl, fn )
+        asl.dlf( myUrl, fn )
+        i = i + 1
+        print( F"> After the DOWNLOAD is finished, your data is stored in <{localFile.name}>")
+
+
+def getTargetSize():
+    return 250 # MB
+
+def describe():
+    i = 1
+    s = get_size( FULL_DS_STAGE_PATH ) / (1024*1024)
+    ts = getTargetSize();
+    for k in DOWNLOAD_URLS:
+
+        print(f"({i}) => {k} :: [estimated size: {ts} MB]" )
+        localFile = gqws.getFileHandle( DS_STAGE_PATH, k, 'wb' )
+        myUrl = DOWNLOAD_URLS[k]
+        print(f"> Data asset can be (re)loaded\n  from : [{myUrl}]\n  into : <{DS_STAGE_PATH}>  ({s} MB)")
+        print( f"")

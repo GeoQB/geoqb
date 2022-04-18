@@ -13,6 +13,9 @@ from pathlib import Path
 
 def getFileHandle( path="", fn="f1.dat", mode="w" ):
     WORKPATH = os.environ.get('GEOQB_WORKSPACE')
+    # print("***>>> " + WORKPATH )
+    #print("***--- " + path )
+
     file = open( WORKPATH + "/" + path + fn, mode)
     return file
 
