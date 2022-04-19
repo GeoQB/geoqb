@@ -37,7 +37,7 @@ FULL_DS_STAGE_PATH=WORKPATH+DS_STAGE_PATH
 
 
 def getDumpFileName( SUFFIX="" ):
-    return DS_STAGE_PATH + f"/dump_temp_enrichment{SUFFIX}.csv.zip"
+    return FULL_DS_STAGE_PATH + f"/dump_temp_enrichment{SUFFIX}.csv.zip"
 
 #
 # The staged data file is used to blend the input data.
@@ -46,7 +46,7 @@ def getDumpFileName( SUFFIX="" ):
 def getDataFrame_linked_by_h3Index( dfIndexesToEnrich, indexColumn="h3index", res=9, dumpFile=True, SUFFIX="-snip" ):
 
     print( dfIndexesToEnrich )
-    FN = DS_STAGE_PATH + FILE_NAMES[0]
+    FN = FULL_DS_STAGE_PATH + FILE_NAMES[0]
     print( f">>> Read data file: {FN}")
     enrichmentData = pd.read_csv( FN, sep=",", compression="zip" )
     print( enrichmentData )
