@@ -91,3 +91,14 @@ source env/env.sh env1; python3 examples/test_szenario_1a.py
 
 This line will execute the **test_szenario1a** which is provided in the **examples** folder.
 
+## Step 6 : Use the CLI for working with your multi-layer graph
+
+We provide aliases for the CLI command. You can initialize those using the following shell script;
+
+```
+source script/set_aliases.sh env1
+```
+
+The figure shows you the available tools and commands.
+
+![img.png](img.png)
