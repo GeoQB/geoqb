@@ -1,6 +1,6 @@
 # GeoQB
 
-_The GeoQB project makes multilayer graph management as easy as making a cake._
+_The GeoQB project makes multi-layer graph management as easy as making a cake._
 
 What [Terraform](https://www.terraform.io/) is for managing cloud applications, GeoQB is for multi-facet graph data management.
 
