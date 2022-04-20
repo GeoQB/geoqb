@@ -3,7 +3,7 @@
 ## Step 1
 Create your TigerGraph applicatin in the TigerGraph cloud.
 
-![img.png](images/quickstart/img01.png)
+![img.png](docs/images/quickstart/img01.png)
 
 ## Step 2
 Clone the pyGeoQB project.

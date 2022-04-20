@@ -5,6 +5,8 @@
 We focus on solving a data integration problem, not by providing just another data processing pipeline, but rather by introducing
 a methodology which allows us to provide contextualized data assets in a form which fits ideally into the scalable graph database: TigerGraph.
 
+![img.png](docs/images/problem_img.png)
+
 The core concept for our work is named _managed graph layer_. 
 Layers are defined by metadata exposed with public datasets, or by queries. 
 Sparql queries are used to read data from public triples stores, and Overpass QL is used to query the Oberpass API for OpenStreetmap data.
@@ -17,6 +19,7 @@ Such a managed graph layer represents a particular aspect from a particular know
 Multiple of them can easily be integrated by using custom indexing methods, such as geo-spatial indexing.
 Managed graph layers can be exposed via APIs, public service endpoints, or in public data pods, such as the SOLID pod.
 
+![cube_img.png](docs/images/cube_img.png)
 
 Using Pandas, R, or Tensorflow together with graph based data integration methods becomes as easy as baking a cake.
 
@@ -92,7 +95,7 @@ Blending more facts into the datamodel can be done in a systematic way.
 Some facts are relevant for all layers, hence we add them tp the h3-cells
 using a generic link with the observed value and timestamp as link attribute.
 
-![img_1.png](docs/images/img_1.png)
+![img_1.png](docs/images/img_schema.png)
 
 The layer-id attribute is used to manage the multilayer aspects of the graph we construct for our analysis szenario.
 
@@ -194,7 +197,7 @@ source ./env/env.sh; python examples/test_graph_analysis_4.py
 ```
 
 
-# How to manage an external workspace?
+# How to manage a workspace?
 
 The GeoQB-workspace is a local folder in which all data files are persisted.
 Such data is, e.g., responses from data providers, downloaded files, generated temporary data assets,
@@ -209,16 +212,26 @@ export GEOQB_WORKSPACE=/Users/mkaempf/GITHUB.private/geoqb-playground/KGC-2022)
 
 Support for using _SOLID-Pods_ for sharing your data asset in a well controlled manner is on the way and will be added soon.
 
-[![img.png](images/temp_logo_pg.png)](https://github.com/GeoQB/geoqb-playground)
+[![img.png](docs/images/temp_logo_pg.png)](https://github.com/GeoQB/geoqb-playground)
 
 GeoQB playground is a Github based data pod with example data used in our hackathon project.
 
-
 # Analysis Results
 
-![img.png](graph-images/clusters-mixed-and-separated.png)
+![img.png](docs/graph-images/clusters-mixed-and-separated.png)
 
-![img.png](graph-images/induced-structure.png)
+How isolated or how well mixed individual aspectes are, is shown in the above image.
+
+
+![img.png](docs/graph-images/induced-structure.png)
+
+This figure highlghts the "backbone" of the graph which represents the problem domains.
+
+----
+
+![img.png](docs/graph-images/img_wordclouds.png)
+
+Word clouds reveal which "items" can be found within a close neighborhood.
 
 ---
 # Resources:
