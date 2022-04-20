@@ -32,10 +32,9 @@ X: Next Generation Knowledge management to showcase personal decision support fo
 
 ---
 # Overview
-Our pyGeoQB package has been created during the _Graph-FOR-All_ hackathon (by TigerGraph).
+Our pyGeoQB package has been created during the [_Graph-FOR-All hackathon_](https://devpost.com/software/geoqb).
 * A presentation about this work has been accepted by the Knowledge Graph Conference (NYC, KGC2022) 
   and will be presented online in May 2022.
-
 
 ## Introduction:
 
