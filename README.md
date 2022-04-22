@@ -22,4 +22,9 @@ _pyGeoQB_ is a Python package, which implements a cloud native ready "multi-laye
 
 _GeoQB playground_ is a Github based data pod with example data used in our hackathon project.
 
+## How Google inspires the work on GeoQB
+
+The Google [data-commons-sustainability initiative](https://blog-google.cdn.ampproject.org/c/s/blog.google/outreach-initiatives/sustainability/data-commons-sustainability/amp/) addresses the same problem as we did when we started GeoQB. Using **pyGeoQB** we can wrap a layer around the **Data Commons Knowledge Graph** which allows fast import and blending of data into existing data structures, modeled in TigerGraph or any other graph database.
+
+
 
