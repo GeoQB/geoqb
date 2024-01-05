@@ -12,4 +12,4 @@ pip install --upgrade pip
 pip install --upgrade -q gspread
 pip install -r requirements.txt
 
-source set_aliases.sh $1
+source script/set_aliases.sh $1
