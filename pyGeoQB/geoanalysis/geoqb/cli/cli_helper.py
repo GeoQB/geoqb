@@ -5,18 +5,13 @@ import geoanalysis.geoqb.geoqb_tg as gqtg
 import geoanalysis.geoqb.geoqb_kafka as gqkafka
 import geoanalysis.geoqb.geoqb_layers as gql
 
-
-
 import glob
 import os
 path_offset = gqws.prepareWorkspaceFolders( verbose=False )
 WORKPATH = f"{path_offset}/sample_clusters/" # needed by individual tools ...
 
-
 def selectLayer():
     return "Aue"
-
-
 
 def selectAsset( cmd, verbose ):
     path1 = f"{path_offset}stage/*"

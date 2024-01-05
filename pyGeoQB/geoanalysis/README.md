@@ -1,4 +1,4 @@
-# p<GeoQB Package
+# pyGeoQB Package
 
 This package contains data structures and functions for context sensitive multi-layer graph-analysis.
 
