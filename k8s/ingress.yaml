@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: geoqb-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "geoqb-lb-ip"
+    networking.gke.io/managed-certificates: "geoqb-cert"
+    kubernetes.io/ingress.allow-http: "true"
+spec:
+  rules:
+  - host: geoqb.io
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: geoqb-web-service
+            port:
+              number: 80
+  - host: api.geoqb.io
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: geoqb-api-service
+            port:
+              number: 80
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: geoqb-cert
+  namespace: default
+spec:
+  domains:
+    - geoqb.io
+    - www.geoqb.io
+    - api.geoqb.io
