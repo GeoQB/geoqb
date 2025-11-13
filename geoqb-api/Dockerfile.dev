@@ -13,11 +13,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install
-COPY requirements.txt .
+COPY geoqb-api/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+# Copy application code (will be overridden by volumes in docker-compose)
+COPY geoqb-api/app /app/app
+COPY pyGeoQB /app/pyGeoQB
 
 # Expose port
 EXPOSE 8000

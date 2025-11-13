@@ -36,8 +36,8 @@ services:
   # Backend API
   backend:
     build:
-      context: ./geoqb-api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./geoqb-api/Dockerfile.dev
     container_name: geoqb-api
     ports:
       - "8000:8000"
