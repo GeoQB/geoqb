@@ -1,0 +1,57 @@
+# Multi-stage build for Python backend
+FROM python:3.9-slim as builder
+
+# Build dependencies
+WORKDIR /build
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and build Python dependencies
+COPY pyGeoQB/requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /build/wheels -r requirements.txt
+
+# Final stage
+FROM python:3.9-slim
+
+# Create non-root user
+RUN groupadd -r geoqb -g 1000 && \
+    useradd -r -g geoqb -u 1000 -m -s /sbin/nologin geoqb
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy Python wheels and install
+COPY --from=builder /build/wheels /wheels
+RUN pip install --no-cache /wheels/* && rm -rf /wheels
+
+# Install additional API dependencies
+RUN pip install fastapi uvicorn[standard] python-multipart aiofiles
+
+# Copy application code
+COPY docker/app/ /app/app/
+COPY pyGeoQB/ /app/pyGeoQB/
+
+# Create workspace directory
+RUN mkdir -p /app/workspace && chown -R geoqb:geoqb /app
+
+# Switch to non-root user
+USER geoqb
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Default command (can be overridden in docker-compose)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

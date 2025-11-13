@@ -1,0 +1,21 @@
+# Frontend Dockerfile (placeholder for React/Vue/etc)
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+# COPY frontend/package*.json ./
+# RUN npm install
+
+# Copy frontend source
+# COPY frontend/ ./
+
+# For now, create a simple placeholder
+RUN echo '<!DOCTYPE html><html><head><title>GeoQB</title></head><body><h1>GeoQB Frontend</h1><p>Coming soon...</p></body></html>' > index.html
+
+# Install simple HTTP server
+RUN npm install -g http-server
+
+EXPOSE 3000
+
+CMD ["http-server", "-p", "3000"]

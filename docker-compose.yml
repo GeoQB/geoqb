@@ -1,0 +1,43 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: geoqb-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TG_HOST=${TG_HOST:-https://your-tigergraph-instance.com}
+      - TG_USERNAME=${TG_USERNAME:-tigergraph}
+      - TG_PASSWORD=${TG_PASSWORD:-tigergraph}
+      - TG_GRAPHNAME=${TG_GRAPHNAME:-GeoQB}
+    volumes:
+      - ./workspace:/app/workspace
+      - ./pyGeoQB:/app/pyGeoQB
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: geoqb-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+volumes:
+  workspace:
