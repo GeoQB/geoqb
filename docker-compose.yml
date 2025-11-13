@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: geoqb-postgres
+    environment:
+      POSTGRES_USER: geoqb
+      POSTGRES_PASSWORD: geoqb_local_password
+      POSTGRES_DB: geoqb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U geoqb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: geoqb-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./geoqb-api
+      dockerfile: Dockerfile
+    container_name: geoqb-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Application
+      APP_NAME: "GeoQB API"
+      ENVIRONMENT: "development"
+      DEBUG: "True"
+
+      # API
+      API_V1_PREFIX: "/api/v1"
+      SECRET_KEY: "local-dev-secret-key-change-in-production-12345678"
+      ALGORITHM: "HS256"
+      ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+
+      # Database
+      DATABASE_URL: "postgresql://geoqb:geoqb_local_password@postgres:5432/geoqb"
+      DATABASE_POOL_SIZE: "5"
+      DATABASE_MAX_OVERFLOW: "10"
+
+      # Redis
+      REDIS_URL: "redis://redis:6379/0"
+      REDIS_CACHE_TTL: "3600"
+
+      # Email (optional for local dev)
+      SENDGRID_API_KEY: ""
+      FROM_EMAIL: "noreply@geoqb.local"
+      SUPPORT_EMAIL: "support@geoqb.local"
+
+      # TigerGraph (optional for local dev)
+      TIGERGRAPH_HOST: "localhost"
+      TIGERGRAPH_USERNAME: "tigergraph"
+      TIGERGRAPH_PASSWORD: "tigergraph"
+      TIGERGRAPH_GRAPHNAME: "GeoQB"
+
+      # Frontend
+      FRONTEND_URL: "http://localhost:3000"
+
+      # CORS
+      CORS_ORIGINS: '["http://localhost:3000","http://frontend:3000"]'
+
+      # Usage Limits
+      FREE_PLAN_LAYER_LIMIT: "5"
+      FREE_PLAN_QUERY_LIMIT: "100"
+      PROFESSIONAL_PLAN_LAYER_LIMIT: "50"
+      PROFESSIONAL_PLAN_QUERY_LIMIT: "10000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "python -c 'from app.database import init_db; init_db()' &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    volumes:
+      - ./geoqb-api/app:/app/app
+      - ./pyGeoQB:/app/pyGeoQB
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Web
+  frontend:
+    build:
+      context: ./geoqb-web
+      dockerfile: Dockerfile.dev
+    container_name: geoqb-web
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:8000"
+      NODE_ENV: "development"
+    depends_on:
+      - backend
+    volumes:
+      - ./geoqb-web/src:/app/src
+      - ./geoqb-web/public:/app/public
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+
+volumes:
+  postgres_data:
+  redis_data:
