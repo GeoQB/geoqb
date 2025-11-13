@@ -36,7 +36,10 @@ RUN pip install --no-cache /wheels/* && rm -rf /wheels
 
 # Copy application code
 COPY app/ /app/app/
-COPY ../pyGeoQB/ /app/pyGeoQB/
+# Note: For production builds with pyGeoQB, build from parent directory:
+# docker build -f geoqb-api/Dockerfile -t geoqb-api .
+# Then uncomment the line below:
+# COPY pyGeoQB/ /app/pyGeoQB/
 
 # Change ownership to non-root user
 RUN chown -R geoqb:geoqb /app
